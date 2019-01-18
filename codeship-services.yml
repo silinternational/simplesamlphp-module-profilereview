@@ -1,0 +1,110 @@
+version: "2"
+
+services:
+  
+  idp:
+    image: silintl/ssp-base:latest
+    volumes:
+      - ./:/profilereview
+      - ./development/enable-debug.sh:/data/enable-debug.sh
+      - ./development/run-dev.sh:/data/run-dev.sh
+      - ./development/run-tests.sh:/data/run-tests.sh
+      - ./development/symlink.sh:/data/symlink.sh
+      - ./development/idp-local/UserPass.php:/data/vendor/simplesamlphp/simplesamlphp/modules/exampleauth/lib/Auth/Source/UserPass.php
+      - ./src:/data/src
+
+      # Revert to standard SSOService.php instead of using sildisco'saml20-idp-hosted
+      - ./development/idp-local/www_saml2_idp_SSOService.php:/data/vendor/simplesamlphp/simplesamlphp/www/saml2/idp/SSOService.php
+
+      # Utilize custom certs
+      - ./development/idp-local/cert:/data/vendor/simplesamlphp/simplesamlphp/cert
+
+      # Utilize custom configs
+      - ./development/idp-local/config/authsources.php:/data/vendor/simplesamlphp/simplesamlphp/config/authsources.php
+
+      # Utilize custom metadata
+      - ./development/idp-local/metadata/saml20-idp-hosted.php:/data/vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-hosted.php
+      - ./development/idp-local/metadata/saml20-sp-remote.php:/data/vendor/simplesamlphp/simplesamlphp/metadata/saml20-sp-remote.php
+    
+    env_file:
+      - ./common.env
+    encrypted_env_file: codeship.env.encrypted
+    environment:
+      - ADMIN_EMAIL=john_doe@example.com
+      - ADMIN_PASS=a
+      - IDP_NAME=Local IdP
+      - PROFILE_URL=http://pwmanager/module.php/core/authenticate.php?as=profilereview-idp-no-port
+      - PROFILE_URL_FOR_TESTS=http://pwmanager/module.php/core/authenticate.php?as=profilereview-idp-no-port
+      - ID_BROKER_ACCESS_TOKEN=dummy
+      - ID_BROKER_ASSERT_VALID_IP=false
+      - ID_BROKER_BASE_URI=dummy
+      - ID_BROKER_TRUSTED_IP_RANGES=192.168.0.1/8
+      - SECRET_SALT=NOT-a-SECRET-1362102e525237994020fb7ff18753c8
+      - SECURE_COOKIE=false
+      - SHOW_SAML_ERRORS=true
+      - REMEMBER_ME_SECRET=not-a-secret-570c5b18dacd45bd
+      - THEME_USE=default
+    command: /data/run-dev.sh
+  
+  sp:
+    image: silintl/ssp-base:latest
+    volumes:
+      # Utilize custom certs
+      - ./development/sp-local/cert:/data/vendor/simplesamlphp/simplesamlphp/cert
+
+      # Utilize custom configs
+      - ./development/sp-local/config/authsources-profilereview-sp.php:/data/vendor/simplesamlphp/simplesamlphp/config/authsources.php
+
+      # Utilize custom metadata
+      - ./development/sp-local/metadata/saml20-idp-remote.php:/data/vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-remote.php
+    env_file:
+      - ./common.env
+    environment:
+      - IDP_NAME=THIS VARIABLE IS REQUIRED BUT PROBABLY NOT USED
+      - SHOW_SAML_ERRORS=true
+      - SAML20_IDP_ENABLE=false
+      - ADMIN_PROTECT_INDEX_PAGE=false
+      - THEME_USE=default
+  
+  pwmanager:
+    image: silintl/ssp-base:latest
+    volumes:
+      # Utilize custom certs
+      - ./development/sp-local/cert:/data/vendor/simplesamlphp/simplesamlphp/cert
+
+      # Utilize custom configs
+      - ./development/sp-local/config/authsources-profilereview-pw-manager.php:/data/vendor/simplesamlphp/simplesamlphp/config/authsources.php
+
+      # Utilize custom metadata
+      - ./development/sp-local/metadata/saml20-idp-remote.php:/data/vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-remote.php
+    environment:
+      - ADMIN_EMAIL=john_doe@example.com
+      - ADMIN_PASS=sp1
+      - IDP_NAME=THIS VARIABLE IS REQUIRED BUT PROBABLY NOT USED
+      - SECRET_SALT=NOT-a-secret-k49fjfkw73hjf9t87wjiw
+      - SECURE_COOKIE=false
+      - SHOW_SAML_ERRORS=true
+      - SAML20_IDP_ENABLE=false
+      - ADMIN_PROTECT_INDEX_PAGE=false
+      - THEME_USE=default
+  
+  tests:
+    image: silintl/ssp-base:latest
+    depends_on:
+      - idp
+      - pwmanager
+      - sp
+    volumes:
+      - ./development/run-tests.sh:/data/run-tests.sh
+      - ./composer.json:/data/composer.json
+      - ./composer.lock:/data/composer.lock
+      - ./features:/data/features
+      - ./src:/data/src
+    env_file:
+      - ./common.env
+    environment:
+      - PROFILE_URL=http://pwmanager/module.php/core/authenticate.php?as=profilereview-idp-no-port
+      - PROFILE_URL_FOR_TESTS=http://pwmanager/module.php/core/authenticate.php?as=profilereview-idp-no-port
+      - THEME_USE=default
+    working_dir: /data
+    command: /data/run-tests.sh

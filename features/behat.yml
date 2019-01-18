@@ -1,0 +1,5 @@
+default:
+    suites:
+        profilereview_features:
+            paths:    [ %paths.base%/../features/profilereview.feature ]
+            contexts: [ Sil\SspProfileReview\Behat\context\ProfileReviewContext ]
