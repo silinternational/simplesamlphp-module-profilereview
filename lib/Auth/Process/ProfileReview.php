@@ -273,58 +273,70 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     {
         // Get the necessary info from the state data.
         $employeeId = $this->getAttribute($this->employeeIdAttr, $state);
-        $mfa = $this->getAttributeAllValues('mfa', $state);
-        $isHeadedToProfileUrl = self::isHeadedToProfileUrl(
-            $state,
-            $this->profileUrl
-        );
-        
+        $isHeadedToProfileUrl = self::isHeadedToProfileUrl($state, $this->profileUrl);
+        if ($isHeadedToProfileUrl) {
+            return;
+        }
+
         // Record to the state what logger class to use.
         $state['loggerClass'] = $this->loggerClass;
         
-        // Add to the state any config data we may need for the low-on/out-of
-        // backup codes pages.
+        // Add to the state any config data we may need later
         $state['ProfileUrl'] = $this->profileUrl;
 
+        $mfa = $this->getAttributeAllValues('mfa', $state);
         if (self::shouldNagToSetUpMfa($mfa)) {
-            if ($isHeadedToProfileUrl) {
-                return;
-            }
-            
-            $this->redirectToMfaNag($state, $employeeId, $this->profileUrl);
+            $this->redirectToNag($state, 'mfa', 'add', $employeeId);
+            return;
+        }
+
+        $method = $this->getAttributeAllValues('method', $state);
+        if (self::shouldNagToSetUpMethod($method)) {
+            $this->redirectToNag($state, 'method', 'add', $employeeId);
             return;
         }
     }
-    
+
+    protected static function shouldNagToSetUpMfa($mfa)
+    {
+        return (strtolower($mfa['add']) === 'yes');
+    }
+
+    protected static function shouldNagToSetUpMethod($method)
+    {
+        return (strtolower($method['add']) === 'yes');
+    }
+
     /**
-     * Redirect user to nag page encouraging them to setup MFA
+     * Redirect user to a specific nag page
      *
      * @param array $state The state data.
+     * @param string $cat Category: 'mfa' or 'method'
+     * @param string $type Type: 'add' or 'review'
      * @param string $employeeId The Employee ID of the user account.
-     * @param string $ProfileUrl URL to MFA setup process
      */
-    protected function redirectToMfaNag(&$state, $employeeId, $ProfileUrl)
+    protected function redirectToNag(&$state, $cat, $type, $employeeId)
     {
         assert('is_array($state)');
 
         $this->logger->info(sprintf(
-            'mfa: Redirecting Employee ID %s to MFA nag message.',
-            var_export($employeeId, true)
+            'profilereview: Redirecting Employee ID %s to %s %s message.',
+            var_export($employeeId, true),
+            $cat,
+            $type
         ));
 
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
         $state['mfaLearnMoreUrl'] = $this->mfaLearnMoreUrl;
         $state['methodLearnMoreUrl'] = $this->methodLearnMoreUrl;
+        $state['ProfileUrl'] = $this->profileUrl;
+        $state['nagType'] = $type;
 
-        $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_MFA_NAG);
-        $url = SimpleSAML\Module::getModuleURL('mfa/nag-for-mfa.php');
+        $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
+        $url = SimpleSAML\Module::getModuleURL(sprintf('profilereview/nag-for-%s.php', $cat));
 
+        $logger = LoggerFactory::getAccordingToState($state);
         HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
-    }
-
-    protected static function shouldNagToSetUpMfa($mfa)
-    {
-        return (strtolower($mfa['add']) === 'yes');
     }
 }
