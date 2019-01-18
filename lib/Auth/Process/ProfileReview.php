@@ -284,27 +284,19 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         // Add to the state any config data we may need later
         $state['ProfileUrl'] = $this->profileUrl;
 
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $mfa = $this->getAttributeAllValues('mfa', $state);
-        if (self::shouldNagToSetUpMfa($mfa)) {
-            $this->redirectToNag($state, 'mfa', 'add', $employeeId);
-            return;
-        }
 
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $method = $this->getAttributeAllValues('method', $state);
-        if (self::shouldNagToSetUpMethod($method)) {
-            $this->redirectToNag($state, 'method', 'add', $employeeId);
-            return;
+
+        foreach (['add', 'review'] as $nagType) {
+            foreach (['mfa', 'method'] as $category) {
+                if (${$category}[$nagType] === 'yes') {
+                    $this->redirectToNag($state, $category, $nagType, $employeeId);
+                }
+            }
         }
-    }
-
-    protected static function shouldNagToSetUpMfa($mfa)
-    {
-        return (strtolower($mfa['add']) === 'yes');
-    }
-
-    protected static function shouldNagToSetUpMethod($method)
-    {
-        return (strtolower($method['add']) === 'yes');
     }
 
     /**
@@ -336,7 +328,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
         $url = SimpleSAML\Module::getModuleURL(sprintf('profilereview/nag-for-%s.php', $cat));
 
-        $logger = LoggerFactory::getAccordingToState($state);
         HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
     }
 }
