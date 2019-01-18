@@ -41,6 +41,7 @@ $metadata['http://profilereview-idp.local:8285'] = [
             'idBrokerClientClass' => FakeIdBrokerClient::class,
             'idBrokerTrustedIpRanges' => Env::get('ID_BROKER_TRUSTED_IP_RANGES'),
             'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
+            'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
             'profileUrl' => Env::get('PROFILE_URL'),
             'loggerClass' => Psr3SamlLogger::class,
         ],

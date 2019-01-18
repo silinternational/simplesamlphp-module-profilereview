@@ -35,6 +35,7 @@ Example (for `metadata/saml20-idp-hosted.php`):
             'idBrokerBaseUri' => Env::get('ID_BROKER_BASE_URI'),
             'idBrokerTrustedIpRanges' => Env::get('ID_BROKER_TRUSTED_IP_RANGES'),
             'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
+            'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
             'profileUrl' => Env::get('PROFILE_URL'),
 
             // Optional:

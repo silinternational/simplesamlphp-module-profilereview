@@ -17,10 +17,11 @@ use SimpleSAML\Utils\HTTP;
 class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_ProcessingFilter
 {
     const SESSION_TYPE = 'profilereview';
-    const STAGE_SENT_TO_MFA_NAG = 'mfa:sent_to_mfa_nag';
+    const STAGE_SENT_TO_NAG = 'mfa:sent_to_nag';
 
     private $employeeIdAttr = null;
     private $mfaLearnMoreUrl = null;
+    private $methodLearnMoreUrl = null;
     private $profileUrl = null;
     
     private $idBrokerAccessToken = null;
@@ -314,7 +315,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
         $state['mfaLearnMoreUrl'] = $this->mfaLearnMoreUrl;
-        $state['ProfileUrl'] = $ProfileUrl;
+        $state['methodLearnMoreUrl'] = $this->methodLearnMoreUrl;
 
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_MFA_NAG);
         $url = SimpleSAML\Module::getModuleURL('mfa/nag-for-mfa.php');

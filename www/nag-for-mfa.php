@@ -8,7 +8,7 @@ if (empty($stateId)) {
     throw new SimpleSAML_Error_BadRequest('Missing required StateId query parameter.');
 }
 
-$state = SimpleSAML_Auth_State::loadState($stateId, Mfa::STAGE_SENT_TO_MFA_NAG);
+$state = SimpleSAML_Auth_State::loadState($stateId, ProfileReview::STAGE_SENT_TO_NAG);
 $logger = LoggerFactory::getAccordingToState($state);
 
 // If the user has pressed the set-up-MFA button...

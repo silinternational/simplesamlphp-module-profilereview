@@ -3,7 +3,7 @@
 start: web
 
 bash:
-	docker-compose run --rm mfaidp bash
+	docker-compose run --rm idp bash
 
 bashtests:
 	docker-compose run --rm tests bash
