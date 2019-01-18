@@ -360,12 +360,12 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         }
     }
     
-    protected static function isHeadedToMfaSetupUrl($state, $mfaSetupUrl)
+    protected static function isHeadedToProfileUrl($state, $ProfileUrl)
     {
         if (array_key_exists('saml:RelayState', $state)) {
             $currentDestination = self::getRelayStateUrl($state);
             if (! empty($currentDestination)) {
-                return (strpos($currentDestination, $mfaSetupUrl) === 0);
+                return (strpos($currentDestination, $ProfileUrl) === 0);
             }
         }
         return false;
@@ -475,15 +475,15 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
      *
      * @param array $state
      */
-    public static function redirectToMfaSetup(&$state)
+    public static function redirectToProfile(&$state)
     {
-        $mfaSetupUrl = $state['mfaSetupUrl'];
+        $ProfileUrl = $state['ProfileUrl'];
         
         // Tell the MFA-setup URL where the user is ultimately trying to go (if known).
         $currentDestination = self::getRelayStateUrl($state);
         if (! empty($currentDestination)) {
-            $mfaSetupUrl = SimpleSAML\Utils\HTTP::addURLParameters(
-                $mfaSetupUrl,
+            $ProfileUrl = SimpleSAML\Utils\HTTP::addURLParameters(
+                $ProfileUrl,
                 ['returnTo' => $currentDestination]
             );
         }
@@ -492,10 +492,10 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $logger->warning(sprintf(
             'mfa: Sending Employee ID %s to set up MFA at %s',
             var_export($state['employeeId'] ?? null, true),
-            var_export($mfaSetupUrl, true)
+            var_export($ProfileUrl, true)
         ));
         
-        HTTP::redirectTrustedURL($mfaSetupUrl);
+        HTTP::redirectTrustedURL($ProfileUrl);
     }
     
     /**
@@ -510,7 +510,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         // Get the necessary info from the state data.
         $employeeId = $this->getAttribute($this->employeeIdAttr, $state);
         $mfa = $this->getAttributeAllValues('mfa', $state);
-        $isHeadedToMfaSetupUrl = self::isHeadedToMfaSetupUrl(
+        $isHeadedToProfileUrl = self::isHeadedToProfileUrl(
             $state,
             $this->profileUrl
         );
@@ -520,10 +520,10 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         
         // Add to the state any config data we may need for the low-on/out-of
         // backup codes pages.
-        $state['mfaSetupUrl'] = $this->profileUrl;
+        $state['ProfileUrl'] = $this->profileUrl;
 
         if (self::shouldNagToSetUpMfa($mfa)) {
-            if ($isHeadedToMfaSetupUrl) {
+            if ($isHeadedToProfileUrl) {
                 return;
             }
             
@@ -564,9 +564,9 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
      *
      * @param array $state The state data.
      * @param string $employeeId The Employee ID of the user account.
-     * @param string $mfaSetupUrl URL to MFA setup process
+     * @param string $ProfileUrl URL to MFA setup process
      */
-    protected function redirectToMfaNag(&$state, $employeeId, $mfaSetupUrl)
+    protected function redirectToMfaNag(&$state, $employeeId, $ProfileUrl)
     {
         assert('is_array($state)');
 
@@ -578,7 +578,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
         $state['mfaLearnMoreUrl'] = $this->mfaLearnMoreUrl;
-        $state['mfaSetupUrl'] = $mfaSetupUrl;
+        $state['ProfileUrl'] = $ProfileUrl;
 
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_MFA_NAG);
         $url = SimpleSAML\Module::getModuleURL('mfa/nag-for-mfa.php');
@@ -742,14 +742,9 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     
     protected static function shouldNagToSetUpMfa($mfa)
     {
-        return (strtolower($mfa['nag']) === 'yes');
+        return (strtolower($mfa['add']) === 'yes');
     }
     
-    protected static function shouldPromptForMfa($mfa)
-    {
-        return (strtolower($mfa['prompt']) !== 'no');
-    }
-
     /**
      * Send a rescue code to the manager, then redirect the user to a page where they
      * can enter the code.

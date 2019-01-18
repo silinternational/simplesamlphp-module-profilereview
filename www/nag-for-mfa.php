@@ -13,7 +13,7 @@ $logger = LoggerFactory::getAccordingToState($state);
 
 // If the user has pressed the set-up-MFA button...
 if (filter_has_var(INPUT_POST, 'setUpMfa')) {
-    ProfileReview::redirectToMfaSetup($state);
+    ProfileReview::redirectToProfile($state);
     return;
 } elseif (filter_has_var(INPUT_POST, 'continue')) {
     // The user has pressed the continue button.

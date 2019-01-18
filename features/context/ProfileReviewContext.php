@@ -455,13 +455,13 @@ class ProfileReviewContext implements Context
     /**
      * @Then I should end up at the mfa-setup URL
      */
-    public function iShouldEndUpAtTheMfaSetupUrl()
+    public function iShouldEndUpAtTheProfileUrl()
     {
-        $mfaSetupUrl = Env::get('PROFILE_URL_FOR_TESTS');
-        Assert::assertNotEmpty($mfaSetupUrl, 'No PROFILE_URL_FOR_TESTS provided');
+        $profileUrl = Env::get('PROFILE_URL_FOR_TESTS');
+        Assert::assertNotEmpty($profileUrl, 'No PROFILE_URL_FOR_TESTS provided');
         $currentUrl = $this->session->getCurrentUrl();
         Assert::assertStringStartsWith(
-            $mfaSetupUrl,
+            $profileUrl,
             $currentUrl,
             'Did NOT end up at the MFA-setup URL'
         );
