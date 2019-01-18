@@ -17,7 +17,7 @@ use SimpleSAML\Utils\HTTP;
 class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_ProcessingFilter
 {
     const SESSION_TYPE = 'profilereview';
-    const STAGE_SENT_TO_XXX = 'mfa:sent_to_xxx';
+    const STAGE_SENT_TO_MFA_NAG = 'mfa:sent_to_mfa_nag';
 
     private $employeeIdAttr = null;
     private $mfaLearnMoreUrl = null;
