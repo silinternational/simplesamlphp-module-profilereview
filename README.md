@@ -69,7 +69,7 @@ Go to <http://profilereview-sp.local:8281/module.php/core/authenticate.php?as=pr
 your browser and sign in with one of the users defined in
 `development/idp-local/config/authsources.php`.
 
-Go to <http://profilereview-sp.local:8281/module.php/core/as_logout.php?ReturnTo=/&AuthId=profilereview-idp>
+Go to <http://profilereview-sp.local:8281/module.php/core/as_logout.php?ReturnTo=authenticate.php%3Fas%3Dprofilereview-idp&AuthId=profilereview-idp>
 to logout.
 
 ## Contributing ##
