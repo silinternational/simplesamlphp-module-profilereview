@@ -16,13 +16,15 @@ $config = [
                     'add' => 'no',
                     'review' => 'no',
                     'options' => [
-                        'id' => 111,
-                        'type' => 'backupcode',
-                        'label' => '2SV #1',
-                        'created_utc' => '2017-10-24T20:40:47Z',
-                        'last_used_utc' => null,
-                        'data' => [
-                            'count' => 10
+                        [
+                            'id' => 111,
+                            'type' => 'backupcode',
+                            'label' => '2SV #1',
+                            'created_utc' => '2017-10-24T20:40:47Z',
+                            'last_used_utc' => null,
+                            'data' => [
+                                'count' => 10
+                            ],
                         ],
                     ],
                 ],
@@ -63,13 +65,15 @@ $config = [
                     'add' => 'no',
                     'review' => 'yes',
                     'options' => [
-                        'id' => 333,
-                        'type' => 'backupcode',
-                        'label' => '2SV #1',
-                        'created_utc' => '2017-10-24T20:40:47Z',
-                        'last_used_utc' => null,
-                        'data' => [
-                            'count' => 10
+                        [
+                            'id' => 333,
+                            'type' => 'backupcode',
+                            'label' => '2SV #1',
+                            'created_utc' => '2017-10-24T20:40:47Z',
+                            'last_used_utc' => null,
+                            'data' => [
+                                'count' => 10
+                            ],
                         ],
                     ],
                 ],
@@ -91,13 +95,15 @@ $config = [
                     'add' => 'no',
                     'review' => 'no',
                     'options' => [
-                        'id' => 444,
-                        'type' => 'backupcode',
-                        'label' => '2SV #1',
-                        'created_utc' => '2017-10-24T20:40:47Z',
-                        'last_used_utc' => null,
-                        'data' => [
-                            'count' => 10
+                        [
+                            'id' => 444,
+                            'type' => 'backupcode',
+                            'label' => '2SV #1',
+                            'created_utc' => '2017-10-24T20:40:47Z',
+                            'last_used_utc' => null,
+                            'data' => [
+                                'count' => 10
+                            ],
                         ],
                     ],
                 ],
@@ -119,13 +125,15 @@ $config = [
                     'add' => 'no',
                     'review' => 'no',
                     'options' => [
-                        'id' => 555,
-                        'type' => 'backupcode',
-                        'label' => '2SV #1',
-                        'created_utc' => '2017-10-24T20:40:47Z',
-                        'last_used_utc' => null,
-                        'data' => [
-                            'count' => 10
+                        [
+                            'id' => 555,
+                            'type' => 'backupcode',
+                            'label' => '2SV #1',
+                            'created_utc' => '2017-10-24T20:40:47Z',
+                            'last_used_utc' => null,
+                            'data' => [
+                                'count' => 10
+                            ],
                         ],
                     ],
                 ],
