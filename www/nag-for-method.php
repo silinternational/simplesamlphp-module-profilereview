@@ -9,7 +9,7 @@ if (empty($stateId)) {
 }
 
 $state = SimpleSAML_Auth_State::loadState($stateId, ProfileReview::STAGE_SENT_TO_NAG);
-//$logger = LoggerFactory::getAccordingToState($state);
+$logger = LoggerFactory::getAccordingToState($state);
 
 // If the user has pressed the set-up-Method button...
 if (filter_has_var(INPUT_POST, 'setUpMethod')) {
@@ -29,10 +29,11 @@ $template = $state['nagType'] === 'add'
 
 $t = new SimpleSAML_XHTML_Template($globalConfig, $template);
 $t->data['learnMoreUrl'] = $state['methodLearnMoreUrl'];
+$t->data['methodOptions'] = $state['options'];
 $t->show();
 
-//$logger->info(sprintf(
-//    'profilereview: Encouraged Employee ID %s to %s Method.',
-//    $state['employeeId'],
-//    $state['nagType']
-//));
+$logger->info(sprintf(
+    'profilereview: Encouraged Employee ID %s to %s Method.',
+    $state['employeeId'],
+    $state['nagType']
+));

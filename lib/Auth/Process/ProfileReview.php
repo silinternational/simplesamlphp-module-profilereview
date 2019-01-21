@@ -293,7 +293,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         foreach (['add', 'review'] as $nagType) {
             foreach (['mfa', 'method'] as $category) {
                 if (${$category}[$nagType] === 'yes') {
-                    $this->redirectToNag($state, $category, $nagType, $employeeId);
+                    $this->redirectToNag($state, $category, $nagType, $employeeId, ${$category}['options']);
                 }
             }
         }
@@ -306,8 +306,9 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
      * @param string $cat Category: 'mfa' or 'method'
      * @param string $type Type: 'add' or 'review'
      * @param string $employeeId The Employee ID of the user account.
+     * @param string $options A list of the mfa or method options.
      */
-    protected function redirectToNag(&$state, $cat, $type, $employeeId)
+    protected function redirectToNag(&$state, $cat, $type, $employeeId, $options)
     {
         assert('is_array($state)');
 
@@ -324,6 +325,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $state['methodLearnMoreUrl'] = $this->methodLearnMoreUrl;
         $state['ProfileUrl'] = $this->profileUrl;
         $state['nagType'] = $type;
+        $state['options'] = $options;
 
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
         $url = SimpleSAML\Module::getModuleURL(sprintf('profilereview/nag-for-%s.php', $cat));

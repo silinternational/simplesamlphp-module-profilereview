@@ -10,9 +10,23 @@ $learnMoreUrl = $this->data['learnMoreUrl'];
 <p>
     We highly encourage you to do this to ensure continuous access and improved security.
 </p>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>Verified</th>
+        <th>Created</th>
+    </tr>
+    <?php foreach ($this->data['methodOptions'] as $option): ?>
+        <tr>
+            <td><?= htmlentities($option['value']) ?></td>
+            <td><?= htmlentities($option['verified']) ? 'yes' : 'no' ?></td>
+            <td><?= htmlentities($option['created']) ?></td>
+        </tr>
+    <?php endforeach; ?>
+</table>
 <form method="post">
     <button name="setUpMfa" style="padding: 4px 8px;">
-        Review Recovery Methods
+        Update Recovery Methods
     </button>
     
     <button name="continue" style="padding: 4px 8px;">

@@ -140,6 +140,14 @@ $config = [
                 'method' => [
                     'add' => 'no',
                     'review' => 'yes',
+                    'options' => [
+                        [
+                            'id' => '55555555555555555555555555555555',
+                            'value' => 'method@example.com',
+                            'verified' => true,
+                            'created' => '2017-10-24T20:40:47Z',
+                        ],
+                    ],
                 ],
             ],
         ],

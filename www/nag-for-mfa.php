@@ -9,7 +9,7 @@ if (empty($stateId)) {
 }
 
 $state = SimpleSAML_Auth_State::loadState($stateId, ProfileReview::STAGE_SENT_TO_NAG);
-//$logger = LoggerFactory::getAccordingToState($state);
+$logger = LoggerFactory::getAccordingToState($state);
 
 // If the user has pressed the set-up-MFA button...
 if (filter_has_var(INPUT_POST, 'setUpMfa')) {
@@ -30,10 +30,11 @@ $template = $state['nagType'] === 'add'
 
 $t = new SimpleSAML_XHTML_Template($globalConfig, $template);
 $t->data['learnMoreUrl'] = $state['mfaLearnMoreUrl'];
+$t->data['mfaOptions'] = $state['options'];
 $t->show();
 
-//$logger->info(sprintf(
-//    'profilereview: Encouraged Employee ID %s to %s MFA.',
-//    $state['employeeId'],
-//    $state['nagType']
-//));
+$logger->info(sprintf(
+    'profilereview: Encouraged Employee ID %s to %s MFA.',
+    $state['employeeId'],
+    $state['nagType']
+));
