@@ -24,9 +24,7 @@ if (filter_has_var(INPUT_POST, 'setUpMethod')) {
 
 $globalConfig = SimpleSAML_Configuration::getInstance();
 
-$template = $state['nagType'] === 'add'
-    ? 'profilereview:nag-for-method.php'
-    : 'profilereview:nag-for-method-review.php';
+$template = 'profilereview:nag-for-method-' . $state['nagType'] . '.php';
 
 $t = new SimpleSAML_XHTML_Template($globalConfig, $template);
 $t->data['learnMoreUrl'] = $state['methodLearnMoreUrl'];
