@@ -9,7 +9,7 @@ bashtests:
 	docker-compose run --rm tests bash
 
 behat:
-	docker-compose run --rm tests bash -c "vendor/bin/behat --config=features/behat.yml --strict --stop-on-failure --append-snippets"
+	docker-compose run --rm tests
 
 clean:
 	docker-compose kill
@@ -28,11 +28,6 @@ ps:
 	docker-compose ps
 
 test: composer web
-	@echo -------------------------------------------------------------------
-	@echo Bringing up idp takes a long time due to composer.
-	@echo After this, you can use \"make behat\" to run the tests more quickly.
-	@echo -------------------------------------------------------------------
-	sleep 200 # Give composer time to install any new dependencies of this project
 	make behat
 
 web:
