@@ -11,7 +11,7 @@ $learnMoreUrl = $this->data['learnMoreUrl'];
     We highly encourage you to do this to ensure continuous access and improved security.
 </p>
 <form method="post">
-    <button name="setUpMfa" style="padding: 4px 8px;">
+    <button name="setUpMethod" style="padding: 4px 8px;">
         Set up Recovery Methods
     </button>
     

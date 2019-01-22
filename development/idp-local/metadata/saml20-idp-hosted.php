@@ -55,7 +55,7 @@ $metadata['http://idp'] = [
      *
      * Can be '__DEFAULT__', to use this entry by default.
      */
-    'host' => 'profilereviewidp', // *** DIFFERENT! ***
+    'host' => 'idp', // *** DIFFERENT! ***
 
     // X.509 key and certificate. Relative to the cert directory.
     'privatekey' => 'dummy.pem',
@@ -82,7 +82,7 @@ $metadata['http://idp'] = [
             'idBrokerTrustedIpRanges' => Env::get('ID_BROKER_TRUSTED_IP_RANGES'),
             'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
             'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
-	    'profileUrl' => Env::get('PROFILE_URL_FOR_TESTS'), // *** DIFFERENT! ***
+	        'profileUrl' => Env::get('PROFILE_URL_FOR_TESTS'), // *** DIFFERENT! ***
             'loggerClass' => Psr3SamlLogger::class,
         ],
     ],

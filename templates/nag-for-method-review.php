@@ -25,7 +25,7 @@ $learnMoreUrl = $this->data['learnMoreUrl'];
     <?php endforeach; ?>
 </table>
 <form method="post">
-    <button name="setUpMfa" style="padding: 4px 8px;">
+    <button name="setUpMethod" style="padding: 4px 8px;">
         Update Recovery Methods
     </button>
     

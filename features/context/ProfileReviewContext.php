@@ -1,6 +1,7 @@
 <?php
 namespace Sil\SspProfileReview\Behat\context;
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\Mink\Driver\GoutteDriver;
 use Behat\Mink\Element\DocumentElement;
@@ -21,9 +22,6 @@ class ProfileReviewContext implements Context
     
     protected $username = null;
     protected $password = null;
-    
-    const USER_AGENT_WITHOUT_U2F_SUPPORT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299';
-    const USER_AGENT_WITH_U2F_SUPPORT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36';
     
     /**
      * The browser session, used for interacting with the website.
@@ -74,19 +72,7 @@ class ProfileReviewContext implements Context
             $page->getHtml()
         ));
     }
-    
-    /**
-     * Get the "continue" button.
-     *
-     * @param DocumentElement $page The page.
-     * @return NodeElement
-     */
-    protected function getContinueButton($page)
-    {
-        $continueButton = $page->find('css', '[name=continue]');
-        return $continueButton;
-    }
-    
+
     /**
      * Get the login button from the given page.
      *
@@ -106,19 +92,6 @@ class ProfileReviewContext implements Context
         }
         Assert::assertNotNull($loginButton, 'Failed to find the login button');
         return $loginButton;
-    }
-    
-    /**
-     * Get the button for submitting the MFA form.
-     *
-     * @param DocumentElement $page The page.
-     * @return NodeElement
-     */
-    protected function getSubmitMfaButton($page)
-    {
-        $submitMfaButton = $page->find('css', '[name=submitMfa]');
-        Assert::assertNotNull($submitMfaButton, 'Failed to find the submit-MFA button');
-        return $submitMfaButton;
     }
     
     /**
@@ -183,21 +156,6 @@ class ProfileReviewContext implements Context
         $this->submitSecondarySspFormIfPresent($page);
     }
     
-    
-    /**
-     * Submit the MFA form, including the secondary page's form (if
-     * simpleSAMLphp shows another page because JavaScript isn't supported).
-     *
-     * @param DocumentElement $page The page.
-     */
-    protected function submitMfaForm($page)
-    {
-        $submitMfaButton = $this->getSubmitMfaButton($page);
-        $submitMfaButton->click();
-        $this->submitSecondarySspFormIfPresent($page);
-    }
-    
-    
     /**
      * Submit the secondary page's form (if simpleSAMLphp shows another page
      * because JavaScript isn't supported).
@@ -224,102 +182,23 @@ class ProfileReviewContext implements Context
     }
     
     /**
-     * @Given I provide credentials that do not need MFA
+     * @Given I provide credentials that do not need review
      */
-    public function iProvideCredentialsThatDoNotNeedMfa()
+    public function iProvideCredentialsThatDoNotNeedReview()
     {
         // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'no_mfa_needed';
-        $this->password = 'a';
-    }
-    
-    /**
-     * @Given I provide credentials that need MFA but have no MFA options available
-     */
-    public function iProvideCredentialsThatNeedMfaButHaveNoMfaOptionsAvailable()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'must_set_up_mfa';
-        $this->password = 'a';
-    }
-    
-    /**
-     * @Then I should see a message that I have to set up MFA
-     */
-    public function iShouldSeeAMessageThatIHaveToSetUpMfa()
-    {
-        $page = $this->session->getPage();
-        Assert::assertContains('must set up 2-', $page->getHtml());
-    }
-    
-    /**
-     * @Then there should be a way to go set up MFA now
-     */
-    public function thereShouldBeAWayToGoSetUpMfaNow()
-    {
-        $page = $this->session->getPage();
-        $this->assertFormContains('name="setUpMfa"', $page);
-    }
-    
-    /**
-     * @Given I provide credentials that need MFA and have backup codes available
-     */
-    public function iProvideCredentialsThatNeedMfaAndHaveBackupCodesAvailable()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_backupcode';
-        $this->password = 'a';
-    }
-    
-    /**
-     * @Then I should see a prompt for a backup code
-     */
-    public function iShouldSeeAPromptForABackupCode()
-    {
-        $page = $this->session->getPage();
-        $pageHtml = $page->getHtml();
-        Assert::assertContains('<h2>Printable Backup Code</h2>', $pageHtml);
-        Assert::assertContains('Enter code', $pageHtml);
-    }
-    
-    /**
-     * @Given I provide credentials that need MFA and have TOTP available
-     */
-    public function iProvideCredentialsThatNeedMfaAndHaveTotpAvailable()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_totp';
-        $this->password = 'a';
-    }
-    
-    /**
-     * @Then I should see a prompt for a TOTP (code)
-     */
-    public function iShouldSeeAPromptForATotpCode()
-    {
-        $page = $this->session->getPage();
-        $pageHtml = $page->getHtml();
-        Assert::assertContains('<h2>Smartphone App</h2>', $pageHtml);
-        Assert::assertContains('Enter 6-digit code', $pageHtml);
-    }
-
-    /**
-     * @Given I provide credentials that need MFA and have U2F available
-     */
-    public function iProvideCredentialsThatNeedMfaAndHaveUfAvailable()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_u2f';
+        $this->username = 'no_review';
         $this->password = 'a';
     }
 
     /**
-     * @Then I should see a prompt for a U2F (security key)
+     * @Given I provide credentials that are due for a(n) :category :nagType reminder
      */
-    public function iShouldSeeAPromptForAUfSecurityKey()
+    public function iProvideCredentialsThatAreDueForAReminder($category, $nagType)
     {
-        $page = $this->session->getPage();
-        Assert::assertContains('<h2>USB Security Key</h2>', $page->getHtml());
+        // See `development/idp-local/config/authsources.php` for options.
+        $this->username = $category . '_' . $nagType;
+        $this->password = 'a';
     }
 
     /**
@@ -330,25 +209,6 @@ class ProfileReviewContext implements Context
         $this->iLogin();
     }
 
-    protected function submitMfaValue($mfaValue)
-    {
-        $page = $this->session->getPage();
-        $page->fillField('mfaSubmission', $mfaValue);
-        $this->submitMfaForm($page);
-        return $page->getHtml();
-    }
-
-    /**
-     * @When I submit a correct backup code
-     */
-    public function iSubmitACorrectBackupCode()
-    {
-        if (! $this->pageContainsElementWithText('h2', 'Printable Backup Code')) {
-            $this->clickLink('backupcode');
-        }
-        $this->submitMfaValue(FakeIdBrokerClient::CORRECT_VALUE);
-    }
-    
     protected function pageContainsElementWithText($cssSelector, $text)
     {
         $page = $this->session->getPage();
@@ -364,67 +224,6 @@ class ProfileReviewContext implements Context
     protected function clickLink($text)
     {
         $this->session->getPage()->clickLink($text);
-    }
-
-    /**
-     * @When I submit an incorrect backup code
-     */
-    public function iSubmitAnIncorrectBackupCode()
-    {
-        $this->submitMfaValue(FakeIdBrokerClient::INCORRECT_VALUE);
-    }
-
-    /**
-     * @Then I should see a message that I have to wait before trying again
-     */
-    public function iShouldSeeAMessageThatIHaveToWaitBeforeTryingAgain()
-    {
-        $page = $this->session->getPage();
-        $pageHtml = $page->getHtml();
-        Assert::assertContains(' wait ', $pageHtml);
-        Assert::assertContains('try again', $pageHtml);
-    }
-
-    /**
-     * @Then I should see a message that it was incorrect
-     */
-    public function iShouldSeeAMessageThatItWasIncorrect()
-    {
-        $page = $this->session->getPage();
-        $pageHtml = $page->getHtml();
-        Assert::assertContains('Incorrect 2-step verification code', $pageHtml);
-    }
-
-    /**
-     * @Given I provide credentials that have a rate-limited MFA
-     */
-    public function iProvideCredentialsThatHaveARateLimitedMfa()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_rate_limited_mfa';
-        $this->password = 'a';
-    }
-
-    /**
-     * @Given I provide credentials that will be nagged to set up MFA
-     */
-    public function iProvideCredentialsThatWillBeNaggedToSetUpMfa()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'nag_for_mfa';
-        $this->password = 'a';
-    }
-
-    /**
-     * @Then I should see a message encouraging me to set up MFA
-     */
-    public function iShouldSeeAMessageEncouragingMeToSetUpMfa()
-    {
-        $page = $this->session->getPage();
-        Assert::assertContains(
-            'increase the security of your account by enabling 2-',
-            $page->getHtml()
-        );
     }
 
     /**
@@ -455,7 +254,7 @@ class ProfileReviewContext implements Context
     /**
      * @Then I should end up at the mfa-setup URL
      */
-    public function iShouldEndUpAtTheProfileUrl()
+    public function iShouldEndUpAtTheMfaSetupUrl()
     {
         $profileUrl = Env::get('PROFILE_URL_FOR_TESTS');
         Assert::assertNotEmpty($profileUrl, 'No PROFILE_URL_FOR_TESTS provided');
@@ -468,295 +267,97 @@ class ProfileReviewContext implements Context
     }
 
     /**
-     * @Then there should NOT be a way to continue to my intended destination
+     * @When I click the set-up-Method button
      */
-    public function thereShouldNotBeAWayToContinueToMyIntendedDestination()
+    public function iClickTheSetUpMethodButton()
     {
-        $page = $this->session->getPage();
-        $continueButton = $this->getContinueButton($page);
-        Assert::assertNull($continueButton, 'Should not have found a continue button');
+        $this->submitFormByClickingButtonNamed('setUpMethod');
     }
 
     /**
-     * @Then I should NOT be able to get to my intended destination
+     * @Then I should end up at the method-setup URL
      */
-    public function iShouldNotBeAbleToGetToMyIntendedDestination()
+    public function iShouldEndUpAtTheMethodSetupUrl()
     {
-        $this->session->visit($this->nonPwManagerUrl);
-        Assert::assertStringStartsNotWith(
-            $this->nonPwManagerUrl,
-            $this->session->getCurrentUrl(),
-            'Failed to prevent me from getting to SPs other than the MFA setup URL'
+        $profileUrl = Env::get('PROFILE_URL_FOR_TESTS');
+        Assert::assertNotEmpty($profileUrl, 'No PROFILE_URL_FOR_TESTS provided');
+        $currentUrl = $this->session->getCurrentUrl();
+        Assert::assertStringStartsWith(
+            $profileUrl,
+            $currentUrl,
+            'Did NOT end up at the Method-setup URL'
         );
     }
 
     /**
-     * @Given I provide credentials that need MFA and have 4 backup codes available
+     * @Then I should see a message encouraging me to add a(n) mfa
      */
-    public function iProvideCredentialsThatNeedMfaAndHave4BackupCodesAvailable()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_4_backupcodes';
-        $this->password = 'a';
-    }
-
-    /**
-     * @Then I should see a message that I am running low on backup codes
-     */
-    public function iShouldSeeAMessageThatIAmRunningLowOnBackupCodes()
+    public function iShouldSeeAMessageEncouragingMeToAddAnMfa()
     {
         $page = $this->session->getPage();
-        Assert::assertContains(
-            'You are almost out of Printable Backup Codes',
-            $page->getHtml()
-        );
+        Assert::assertContains('increase the security of your account by enabling 2-Step', $page->getHtml());
     }
 
     /**
-     * @Then there should be a way to get more backup codes now
+     * @Then there should be a way to go add MFA now
      */
-    public function thereShouldBeAWayToGetMoreBackupCodesNow()
+    public function thereShouldBeAWayToGoAddMfaNow()
     {
         $page = $this->session->getPage();
-        $this->assertFormContains('name="getMore"', $page);
+        $this->assertFormContains('name="setUpMfa"', $page);
     }
 
     /**
-     * @Given I provide credentials that need MFA and have 1 backup code available and no other MFA
+     * @Then I should see a message encouraging me to add a(n) method
      */
-    public function iProvideCredentialsThatNeedMfaAndHave1BackupCodeAvailableAndNoOtherMfa()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_1_backupcode_only';
-        $this->password = 'a';
-    }
-
-    /**
-     * @Then I should see a message that I have used up my backup codes
-     */
-    public function iShouldSeeAMessageThatIHaveUsedUpMyBackupCodes()
+    public function iShouldSeeAMessageEncouragingMeToAddAnMethod()
     {
         $page = $this->session->getPage();
-        Assert::assertContains(
-            'You just used your last Printable Backup Code',
-            $page->getHtml()
-        );
+        Assert::assertContains('you can provide alternate email addresses', $page->getHtml());
     }
 
     /**
-     * @Given I provide credentials that need MFA and have 1 backup code available plus some other MFA
+     * @Then there should be a way to go add method now
      */
-    public function iProvideCredentialsThatNeedMfaAndHave1BackupCodeAvailablePlusSomeOtherMfa()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_1_backupcode_plus';
-        $this->password = 'a';
-    }
-
-    /**
-     * @When I click the get-more-backup-codes button
-     */
-    public function iClickTheGetMoreBackupCodesButton()
-    {
-        $this->submitFormByClickingButtonNamed('getMore');
-    }
-
-    /**
-     * @Then I should be told I only have :numRemaining backup codes left
-     */
-    public function iShouldBeToldIOnlyHaveBackupCodesLeft($numRemaining)
+    public function thereShouldBeAWayToGoAddMethodNow()
     {
         $page = $this->session->getPage();
-        Assert::assertContains(
-            'You only have ' . $numRemaining . ' remaining',
-            $page->getHtml()
-        );
+        $this->assertFormContains('name="setUpMethod"', $page);
     }
 
     /**
-     * @Then I should be given more backup codes
+     * @Then I should see a message encouraging me to review a(n) mfa
      */
-    public function iShouldBeGivenMoreBackupCodes()
+    public function iShouldSeeAMessageEncouragingMeToReviewAnMfa()
     {
         $page = $this->session->getPage();
-        Assert::assertContains(
-            'Here are your new Printable Backup Codes',
-            $page->getContent()
-        );
+        Assert::assertContains('time to review your 2-Step', $page->getHtml());
     }
 
     /**
-     * @Given I provide credentials that have U2F
+     * @Then there should be a way to go review MFA now
      */
-    public function iProvideCredentialsThatHaveUf()
-    {
-        $this->iProvideCredentialsThatNeedMfaAndHaveUfAvailable();
-    }
-
-    /**
-     * @Given the user's browser supports U2F
-     */
-    public function theUsersBrowserSupportsUf()
-    {
-        $userAgentWithU2f = self::USER_AGENT_WITH_U2F_SUPPORT;
-        Assert::assertTrue(LoginBrowser::supportsU2f($userAgentWithU2f));
-        
-        $this->driver->getClient()->setServerParameter('HTTP_USER_AGENT', $userAgentWithU2f);
-    }
-
-    /**
-     * @Given I provide credentials that have U2F, TOTP
-     */
-    public function iProvideCredentialsThatHaveUfTotp()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_u2f_totp';
-        $this->password = 'a';
-    }
-
-    /**
-     * @Given I provide credentials that have U2F, backup codes
-     */
-    public function iProvideCredentialsThatHaveUfBackupCodes()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_u2f_backupcodes';
-        $this->password = 'a';
-    }
-
-    /**
-     * @Given I provide credentials that have U2F, TOTP, backup codes
-     */
-    public function iProvideCredentialsThatHaveUfTotpBackupCodes()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_u2f_totp_backupcodes';
-        $this->password = 'a';
-    }
-
-    /**
-     * @Given I provide credentials that have TOTP
-     */
-    public function iProvideCredentialsThatHaveTotp()
-    {
-        $this->iProvideCredentialsThatNeedMfaAndHaveTotpAvailable();
-    }
-
-    /**
-     * @Given I provide credentials that have TOTP, backup codes
-     */
-    public function iProvideCredentialsThatHaveTotpBackupCodes()
-    {
-        // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'has_totp_backupcodes';
-        $this->password = 'a';
-    }
-
-    /**
-     * @Given I provide credentials that have backup codes
-     */
-    public function iProvideCredentialsThatHaveBackupCodes()
-    {
-        $this->iProvideCredentialsThatNeedMfaAndHaveBackupCodesAvailable();
-    }
-
-    /**
-     * @Given the user's browser does not support U2F
-     */
-    public function theUsersBrowserDoesNotSupportUf()
-    {
-        $userAgentWithoutU2f = self::USER_AGENT_WITHOUT_U2F_SUPPORT;
-        Assert::assertFalse(LoginBrowser::supportsU2f($userAgentWithoutU2f));
-        
-        $this->driver->getClient()->setServerParameter('HTTP_USER_AGENT', $userAgentWithoutU2f);
-    }
-
-    /**
-     * @Then I should not see an error message about U2F being unsupported
-     */
-    public function iShouldNotSeeAnErrorMessageAboutUfBeingUnsupported()
+    public function thereShouldBeAWayToGoReviewMfaNow()
     {
         $page = $this->session->getPage();
-        Assert::assertNotContains('USB Security Keys are not supported', $page->getContent());
+        $this->assertFormContains('name="setUpMfa"', $page);
     }
 
     /**
-     * @Then I should see an error message about U2F being unsupported
+     * @Then I should see a message encouraging me to review a(n) method
      */
-    public function iShouldSeeAnErrorMessageAboutUfBeingUnsupported()
+    public function iShouldSeeAMessageEncouragingMeToReviewAMethod()
     {
         $page = $this->session->getPage();
-        Assert::assertContains('USB Security Keys are not supported', $page->getContent());
+        Assert::assertContains('review your account recovery methods', $page->getHtml());
     }
 
     /**
-     * @Given the user has a manager email
+     * @Then there should be a way to go review method now
      */
-    public function theUserHasAManagerEmail()
-    {
-        $this->username .= '_and_mgr';
-    }
-
-    /**
-     * @Then I should see a link to send a code to the user's manager
-     */
-    public function iShouldSeeALinkToSendACodeToTheUsersManager()
+    public function thereShouldBeAWayToGoReviewMethodNow()
     {
         $page = $this->session->getPage();
-        Assert::assertContains('Send a code</a> to your manager', $page->getContent());
-    }
-
-    /**
-     * @Given the user does not have a manager email
-     */
-    public function theUserDoesntHaveAManagerEmail()
-    {
-        /*
-         * No change to username needed.
-         */
-    }
-
-    /**
-     * @Then I should not see a link to send a code to the user's manager
-     */
-    public function iShouldNotSeeALinkToSendACodeToTheUsersManager()
-    {
-        $page = $this->session->getPage();
-        Assert::assertNotContains('Send a code</a> to your manager', $page->getContent());
-    }
-
-    /**
-     * @When I click the Send a code link
-     */
-    public function iClickTheSendACodeLink()
-    {
-        $this->clickLink('Send a code');
-    }
-
-    /**
-     * @Then I should see a prompt for a manager rescue code
-     */
-    public function iShouldSeeAPromptForAManagerRescueCode()
-    {
-        $page = $this->session->getPage();
-        $pageHtml = $page->getHtml();
-        Assert::assertContains('<h2>Manager Rescue Code</h2>', $pageHtml);
-        Assert::assertContains('Enter code', $pageHtml);
-    }
-
-    /**
-     * @When I submit the correct manager code
-     */
-    public function iSubmitTheCorrectManagerCode()
-    {
-        $this->submitMfaValue(FakeIdBrokerClient::CORRECT_VALUE);
-    }
-
-    /**
-     * @When I submit an incorrect manager code
-     */
-    public function iSubmitAnIncorrectManagerCode()
-    {
-        $this->submitMfaValue(FakeIdBrokerClient::INCORRECT_VALUE);
+        $this->assertFormContains('name="setUpMethod"', $page);
     }
 }
