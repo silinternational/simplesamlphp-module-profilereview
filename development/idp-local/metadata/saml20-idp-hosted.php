@@ -80,7 +80,9 @@ $metadata['http://idp'] = [
             'idBrokerBaseUri' => Env::get('ID_BROKER_BASE_URI'),
             'idBrokerClientClass' => FakeIdBrokerClient::class,
             'idBrokerTrustedIpRanges' => Env::get('ID_BROKER_TRUSTED_IP_RANGES'),
-            'profileUrl' => Env::get('PROFILE_URL'),
+            'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
+            'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
+	    'profileUrl' => Env::get('PROFILE_URL_FOR_TESTS'), // *** DIFFERENT! ***
             'loggerClass' => Psr3SamlLogger::class,
         ],
     ],
