@@ -8,7 +8,7 @@ $learnMoreUrl = $this->data['learnMoreUrl'];
     Did you know you could greatly increase the security of your account by enabling 2-Step Verification?
 </p>
 <p>
-    We highly encourage you to do this for your own safety
+    We highly encourage you to do this for your own safety.
 </p>
 <form method="post">
     <button name="setUpMfa" style="padding: 4px 8px;">

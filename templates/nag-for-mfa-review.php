@@ -9,7 +9,7 @@ $learnMoreUrl = $this->data['learnMoreUrl'];
     It's time to review your 2-Step Verification options.
 </p>
 <p>
-    We highly encourage you to do this for your own safety
+    We highly encourage you to do this for your own safety.
 </p>
 <table>
     <tr>
