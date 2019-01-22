@@ -1,12 +1,8 @@
 <?php
 
 use Psr\Log\LoggerInterface;
-use Sil\PhpEnv\Env;
-use Sil\Idp\IdBroker\Client\exceptions\MfaRateLimitException;
-use Sil\Idp\IdBroker\Client\IdBrokerClient;
 use Sil\Psr3Adapters\Psr3SamlLogger;
 use Sil\SspProfileReview\LoggerFactory;
-use Sil\SspProfileReview\LoginBrowser;
 use SimpleSAML\Utils\HTTP;
 
 /**
@@ -17,30 +13,25 @@ use SimpleSAML\Utils\HTTP;
 class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_ProcessingFilter
 {
     const SESSION_TYPE = 'profilereview';
-    const STAGE_SENT_TO_NAG = 'mfa:sent_to_nag';
+    const STAGE_SENT_TO_NAG = 'profilereview:sent_to_nag';
 
     private $employeeIdAttr = null;
     private $mfaLearnMoreUrl = null;
     private $methodLearnMoreUrl = null;
     private $profileUrl = null;
     
-    private $idBrokerAccessToken = null;
-    private $idBrokerAssertValidIp;
-    private $idBrokerBaseUri = null;
-    private $idBrokerClientClass = null;
-    private $idBrokerTrustedIpRanges = [];
-    
     /** @var LoggerInterface */
     protected $logger;
     
     /** @var string */
     protected $loggerClass;
-    
+
     /**
      * Initialize this filter.
      *
-     * @param array $config  Configuration information about this filter.
-     * @param mixed $reserved  For future use.
+     * @param array $config Configuration information about this filter.
+     * @param mixed $reserved For future use.
+     * @throws Exception
      */
     public function __construct($config, $reserved)
     {
@@ -54,18 +45,17 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $this->loadValuesFromConfig($config, [
             'profileUrl',
             'employeeIdAttr',
-            'idBrokerAccessToken',
-            'idBrokerBaseUri',
         ]);
-        
-        $tempTrustedIpRanges = $config['idBrokerTrustedIpRanges'] ?? '';
-        if (! empty($tempTrustedIpRanges)) {
-            $this->idBrokerTrustedIpRanges = explode(',', $tempTrustedIpRanges);
-        }
-        $this->idBrokerAssertValidIp = (bool)($config['idBrokerAssertValidIp'] ?? true);
-        $this->idBrokerClientClass = $config['idBrokerClientClass'] ?? IdBrokerClient::class;
+
+        $this->mfaLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
+        $this->methodLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
     }
-    
+
+    /**
+     * @param $config
+     * @param $attributes
+     * @throws Exception
+     */
     protected function loadValuesFromConfig($config, $attributes)
     {
         foreach ($attributes as $attribute) {
@@ -141,63 +131,14 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         
         return is_null($attributeData) ? null : (array)$attributeData;
     }
-    
-    /**
-     * Get an ID Broker client.
-     *
-     * @param array $idBrokerConfig
-     * @return IdBrokerClient
-     */
-    protected static function getIdBrokerClient($idBrokerConfig)
-    {
-        $clientClass = $idBrokerConfig['clientClass'];
-        $baseUri = $idBrokerConfig['baseUri'];
-        $accessToken = $idBrokerConfig['accessToken'];
-        $trustedIpRanges = $idBrokerConfig['trustedIpRanges'];
-        $assertValidIp = $idBrokerConfig['assertValidIp'];
-        
-        return new $clientClass($baseUri, $accessToken, [
-            'http_client_options' => [
-                'timeout' => 10,
-            ],
-            IdBrokerClient::TRUSTED_IPS_CONFIG => $trustedIpRanges,
-            IdBrokerClient::ASSERT_VALID_BROKER_IP_CONFIG => $assertValidIp,
-        ]);
-    }
-    
-    /**
-     * Get the template identifier (string) to use for the specified MFA type.
-     *
-     * @param string $mfaType The desired MFA type, such as 'u2f', 'totp', or
-     *     'backupcode'.
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    public static function getTemplateFor($mfaType)
-    {
-        $mfaOptionTemplates = [
-            'backupcode' => 'mfa:prompt-for-mfa-backupcode.php',
-            'totp' => 'mfa:prompt-for-mfa-totp.php',
-            'u2f' => 'mfa:prompt-for-mfa-u2f.php',
-            'manager' => 'mfa:prompt-for-mfa-manager.php',
-        ];
-        $template = $mfaOptionTemplates[$mfaType] ?? null;
-        
-        if ($template === null) {
-            throw new \InvalidArgumentException(sprintf(
-                'No %s MFA template is available.',
-                var_export($mfaType, true)
-            ), 1507219338);
-        }
-        return $template;
-    }
-    
+
     /**
      * Return the saml:RelayState if it begins with "http" or "https". Otherwise
      * return an empty string.
      *
      * @param array $state
      * @returns string
+     * @return mixed|string
      */
     protected static function getRelayStateUrl($state)
     {
@@ -235,7 +176,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     }
 
     /**
-     * Redirect the user to set up MFA.
+     * Redirect the user to set up profile.
      *
      * @param array $state
      */
@@ -243,7 +184,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     {
         $ProfileUrl = $state['ProfileUrl'];
         
-        // Tell the MFA-setup URL where the user is ultimately trying to go (if known).
+        // Tell the profile-setup URL where the user is ultimately trying to go (if known).
         $currentDestination = self::getRelayStateUrl($state);
         if (! empty($currentDestination)) {
             $ProfileUrl = SimpleSAML\Utils\HTTP::addURLParameters(
@@ -254,7 +195,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         
         $logger = LoggerFactory::getAccordingToState($state);
         $logger->warning(sprintf(
-            'mfa: Sending Employee ID %s to set up MFA at %s',
+            'profilereview: Sending Employee ID %s to set up profile at %s',
             var_export($state['employeeId'] ?? null, true),
             var_export($ProfileUrl, true)
         ));
@@ -281,7 +222,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         // Record to the state what logger class to use.
         $state['loggerClass'] = $this->loggerClass;
         
-        // Add to the state any config data we may need later
         $state['ProfileUrl'] = $this->profileUrl;
 
         /** @noinspection PhpUnusedLocalVariableInspection */

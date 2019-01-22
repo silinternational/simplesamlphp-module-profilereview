@@ -1,7 +1,6 @@
 <?php
 namespace Sil\SspProfileReview\Behat\context;
 
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\Mink\Driver\GoutteDriver;
 use Behat\Mink\Element\DocumentElement;
@@ -10,8 +9,6 @@ use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Session;
 use PHPUnit\Framework\Assert;
 use Sil\PhpEnv\Env;
-use Sil\SspProfileReview\Behat\fakes\FakeIdBrokerClient;
-use Sil\SspProfileReview\LoginBrowser;
 
 /**
  * Defines application features from the specific context.

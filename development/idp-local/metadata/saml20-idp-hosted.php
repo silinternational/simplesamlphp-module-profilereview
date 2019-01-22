@@ -2,7 +2,6 @@
 
 use Sil\PhpEnv\Env;
 use Sil\Psr3Adapters\Psr3SamlLogger;
-use Sil\SspProfileReview\Behat\fakes\FakeIdBrokerClient;
 
 /**
  * SAML 2.0 IdP configuration for SimpleSAMLphp.
@@ -35,11 +34,6 @@ $metadata['http://profilereview-idp.local:8285'] = [
         10 => [
             'class' => 'profilereview:ProfileReview',
             'employeeIdAttr' => 'employeeNumber',
-            'idBrokerAccessToken' => Env::get('ID_BROKER_ACCESS_TOKEN'),
-            'idBrokerAssertValidIp' => Env::get('ID_BROKER_ASSERT_VALID_IP'),
-            'idBrokerBaseUri' => Env::get('ID_BROKER_BASE_URI'),
-            'idBrokerClientClass' => FakeIdBrokerClient::class,
-            'idBrokerTrustedIpRanges' => Env::get('ID_BROKER_TRUSTED_IP_RANGES'),
             'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
             'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
             'profileUrl' => Env::get('PROFILE_URL'),
@@ -75,11 +69,6 @@ $metadata['http://idp'] = [
         10 => [
             'class' => 'profilereview:ProfileReview',
             'employeeIdAttr' => 'employeeNumber',
-            'idBrokerAccessToken' => Env::get('ID_BROKER_ACCESS_TOKEN'),
-            'idBrokerAssertValidIp' => Env::get('ID_BROKER_ASSERT_VALID_IP'),
-            'idBrokerBaseUri' => Env::get('ID_BROKER_BASE_URI'),
-            'idBrokerClientClass' => FakeIdBrokerClient::class,
-            'idBrokerTrustedIpRanges' => Env::get('ID_BROKER_TRUSTED_IP_RANGES'),
             'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
             'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
 	        'profileUrl' => Env::get('PROFILE_URL_FOR_TESTS'), // *** DIFFERENT! ***
