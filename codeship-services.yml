@@ -40,7 +40,7 @@ services:
       - SHOW_SAML_ERRORS=true
       - REMEMBER_ME_SECRET=not-a-secret-570c5b18dacd45bd
       - THEME_USE=default
-    command: /data/run-dev.sh
+    command: ["/data/run-dev.sh"]
   
   sp:
     image: silintl/ssp-base:latest
@@ -103,4 +103,4 @@ services:
       - PROFILE_URL_FOR_TESTS=http://pwmanager/module.php/core/authenticate.php?as=profilereview-idp-no-port
       - THEME_USE=default
     working_dir: /data
-    command: /data/run-tests.sh
+    command: ["/data/run-tests.sh"]
