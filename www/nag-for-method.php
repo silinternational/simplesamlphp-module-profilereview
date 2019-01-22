@@ -16,6 +16,7 @@ if (filter_has_var(INPUT_POST, 'setUpMethod')) {
     ProfileReview::redirectToProfile($state);
     return;
 } elseif (filter_has_var(INPUT_POST, 'continue')) {
+    unset($state['Attributes']['options']);
     // The user has pressed the continue button.
     SimpleSAML_Auth_ProcessingChain::resumeProcessing($state);
     return;
