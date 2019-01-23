@@ -9,7 +9,7 @@ bashtests:
 	docker-compose run --rm tests bash
 
 behat:
-	docker-compose run --rm tests
+	docker-compose run --rm tests bash -c "vendor/bin/behat --strict --stop-on-failure --append-snippets"
 
 clean:
 	docker-compose kill

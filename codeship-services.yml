@@ -95,6 +95,7 @@ services:
       - ./composer.json:/data/composer.json
       - ./composer.lock:/data/composer.lock
       - ./features:/data/features
+      - ./features/behat.yml:/data/behat.yml
       - ./src:/data/src
     env_file:
       - ./common.env
