@@ -4,7 +4,7 @@ $config = [
     'example-userpass' => [
         'exampleauth:UserPass',
             'no_review:a' => [
-                'eduPersonPrincipalName' => ['NO_REVIEW@mfaidp'],
+                'eduPersonPrincipalName' => ['NO_REVIEW@idp'],
                 'eduPersonTargetID' => ['11111111-1111-1111-1111-111111111111'],
                 'sn' => ['Review'],
                 'givenName' => ['No'],
@@ -34,7 +34,7 @@ $config = [
                 ],
             ],
             'mfa_add:a' => [
-                'eduPersonPrincipalName' => ['MFA_ADD@mfaidp'],
+                'eduPersonPrincipalName' => ['MFA_ADD@idp'],
                 'eduPersonTargetID' => ['22222222-2222-2222-2222-222222222222'],
                 'sn' => ['Add'],
                 'givenName' => ['Mfa'],
@@ -53,7 +53,7 @@ $config = [
                 ],
             ],
             'mfa_review:a' => [
-                'eduPersonPrincipalName' => ['MFA_REVIEW@mfaidp'],
+                'eduPersonPrincipalName' => ['MFA_REVIEW@idp'],
                 'eduPersonTargetID' => ['33333333-3333-3333-3333-333333333333'],
                 'sn' => ['Review'],
                 'givenName' => ['Mfa'],
