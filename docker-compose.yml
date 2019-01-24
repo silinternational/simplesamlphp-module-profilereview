@@ -7,8 +7,7 @@ services:
     ports:
       - "8285:80"
     volumes:
-      - ./:/profilereview
-#      - ./:/data/vendor/simplesamlphp/simplesamlphp/modules/profilereview
+      - ./:/data/vendor/simplesamlphp/simplesamlphp/modules/profilereview
       - ./development/enable-debug.sh:/data/enable-debug.sh
       - ./development/run-dev.sh:/data/run-dev.sh
       - ./development/run-tests.sh:/data/run-tests.sh
