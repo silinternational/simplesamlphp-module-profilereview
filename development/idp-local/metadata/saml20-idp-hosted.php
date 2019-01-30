@@ -37,6 +37,7 @@ $metadata['http://profilereview-idp.local:8285'] = [
             'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
             'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
             'profileUrl' => Env::get('PROFILE_URL'),
+            'skipReviewWhenHeadedToProfile' => Env::get('SKIP_REVIEW_WHEN_HEADED_TO_PROFILE'),
             'loggerClass' => Psr3SamlLogger::class,
         ],
     ],
@@ -72,6 +73,7 @@ $metadata['http://idp'] = [
             'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
             'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
 	        'profileUrl' => Env::get('PROFILE_URL_FOR_TESTS'), // *** DIFFERENT! ***
+	        'skipReviewWhenHeadedToProfile' => Env::get('SKIP_REVIEW_WHEN_HEADED_TO_PROFILE'),
             'loggerClass' => Psr3SamlLogger::class,
         ],
     ],
