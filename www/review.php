@@ -12,7 +12,7 @@ $state = SimpleSAML_Auth_State::loadState($stateId, ProfileReview::STAGE_SENT_TO
 $logger = LoggerFactory::getAccordingToState($state);
 
 // If the user has pressed the set-up-Method button...
-if (filter_has_var(INPUT_POST, 'setUpMethod')) {
+if (filter_has_var(INPUT_POST, 'updateProfile')) {
     ProfileReview::redirectToProfile($state);
     return;
 } elseif (filter_has_var(INPUT_POST, 'continue')) {
@@ -25,15 +25,15 @@ if (filter_has_var(INPUT_POST, 'setUpMethod')) {
 
 $globalConfig = SimpleSAML_Configuration::getInstance();
 
-$template = 'profilereview:nag-for-method-' . $state['nagType'] . '.php';
+$template = 'profilereview:review.php';
 
 $t = new SimpleSAML_XHTML_Template($globalConfig, $template);
-$t->data['learnMoreUrl'] = $state['methodLearnMoreUrl'];
-$t->data['methodOptions'] = $state['options'];
+$t->data['learnMoreUrl'] = $state['mfaLearnMoreUrl'];
+$t->data['methodOptions'] = $state['methodOptions'];
+$t->data['mfaOptions'] = $state['mfaOptions'];
 $t->show();
 
 $logger->info(sprintf(
-    'profilereview: Encouraged Employee ID %s to %s Method.',
-    $state['employeeId'],
-    $state['nagType']
+    'profilereview: Encouraged Employee ID %s to review profile.',
+    $state['employeeId']
 ));

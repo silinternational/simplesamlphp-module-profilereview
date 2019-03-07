@@ -17,7 +17,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
 
     private $employeeIdAttr = null;
     private $mfaLearnMoreUrl = null;
-    private $methodLearnMoreUrl = null;
     private $profileUrl = null;
     private $skipReviewWhenHeadedToProfile = null;
 
@@ -49,7 +48,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         ]);
 
         $this->mfaLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
-        $this->methodLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
         $this->skipReviewWhenHeadedToProfile = $config['skipReviewWhenHeadedToProfile'] ?? true;
     }
 
@@ -227,18 +225,16 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         
         $state['ProfileUrl'] = $this->profileUrl;
 
+        $profileReview = $this->getAttribute('profile_review', $state);
+
         /** @noinspection PhpUnusedLocalVariableInspection */
         $mfa = $this->getAttributeAllValues('mfa', $state);
 
         /** @noinspection PhpUnusedLocalVariableInspection */
         $method = $this->getAttributeAllValues('method', $state);
 
-        foreach (['add', 'review'] as $nagType) {
-            foreach (['mfa', 'method'] as $category) {
-                if (${$category}[$nagType] === 'yes') {
-                    $this->redirectToNag($state, $category, $nagType, $employeeId, ${$category}['options']);
-                }
-            }
+        if ($profileReview == 'yes') {
+            $this->redirectToNag($state, $employeeId, $mfa['options'], $method['options']);
         }
 
         unset($state['Attributes']['method']);
@@ -249,32 +245,28 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
      * Redirect user to a specific nag page
      *
      * @param array $state The state data.
-     * @param string $cat Category: 'mfa' or 'method'
-     * @param string $type Type: 'add' or 'review'
      * @param string $employeeId The Employee ID of the user account.
-     * @param string $options A list of the mfa or method options.
+     * @param string $mfaOptions A list of the mfa options.
+     * @param string $methodOptions A list of the method options.
      */
-    protected function redirectToNag(&$state, $cat, $type, $employeeId, $options)
+    protected function redirectToNag(&$state, $employeeId, $mfaOptions, $methodOptions)
     {
         assert('is_array($state)');
 
         $this->logger->info(sprintf(
-            'profilereview: Redirecting Employee ID %s to %s %s message.',
-            var_export($employeeId, true),
-            $cat,
-            $type
+            'profilereview: Redirecting Employee ID %s to profile review.',
+            var_export($employeeId, true)
         ));
 
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
         $state['mfaLearnMoreUrl'] = $this->mfaLearnMoreUrl;
-        $state['methodLearnMoreUrl'] = $this->methodLearnMoreUrl;
         $state['ProfileUrl'] = $this->profileUrl;
-        $state['nagType'] = $type;
-        $state['options'] = $options;
+        $state['mfaOptions'] = $mfaOptions;
+        $state['methodOptions'] = $methodOptions;
 
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
-        $url = SimpleSAML\Module::getModuleURL(sprintf('profilereview/nag-for-%s.php', $cat));
+        $url = SimpleSAML\Module::getModuleURL(sprintf('profilereview/review.php'));
 
         HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
     }

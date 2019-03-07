@@ -241,17 +241,17 @@ class ProfileReviewContext implements Context
     }
 
     /**
-     * @When I click the set-up-MFA button
+     * @When I click the update profile button
      */
-    public function iClickTheSetUpMfaButton()
+    public function iClickTheUpdateProfileButton()
     {
-        $this->submitFormByClickingButtonNamed('setUpMfa');
+        $this->submitFormByClickingButtonNamed('updateProfile');
     }
 
     /**
-     * @Then I should end up at the mfa-setup URL
+     * @Then I should end up at the update profile URL
      */
-    public function iShouldEndUpAtTheMfaSetupUrl()
+    public function iShouldEndUpAtTheUpdateProfileUrl()
     {
         $profileUrl = Env::get('PROFILE_URL_FOR_TESTS');
         Assert::assertNotEmpty($profileUrl, 'No PROFILE_URL_FOR_TESTS provided');
@@ -259,102 +259,25 @@ class ProfileReviewContext implements Context
         Assert::assertStringStartsWith(
             $profileUrl,
             $currentUrl,
-            'Did NOT end up at the MFA-setup URL'
+            'Did NOT end up at the update profile URL'
         );
     }
 
     /**
-     * @When I click the set-up-Method button
+     * @Then I should see a message encouraging me to review my profile
      */
-    public function iClickTheSetUpMethodButton()
-    {
-        $this->submitFormByClickingButtonNamed('setUpMethod');
-    }
-
-    /**
-     * @Then I should end up at the method-setup URL
-     */
-    public function iShouldEndUpAtTheMethodSetupUrl()
-    {
-        $profileUrl = Env::get('PROFILE_URL_FOR_TESTS');
-        Assert::assertNotEmpty($profileUrl, 'No PROFILE_URL_FOR_TESTS provided');
-        $currentUrl = $this->session->getCurrentUrl();
-        Assert::assertStringStartsWith(
-            $profileUrl,
-            $currentUrl,
-            'Did NOT end up at the Method-setup URL'
-        );
-    }
-
-    /**
-     * @Then I should see a message encouraging me to add a(n) mfa
-     */
-    public function iShouldSeeAMessageEncouragingMeToAddAnMfa()
+    public function iShouldSeeAMessageEncouragingMeToReviewMyProfile()
     {
         $page = $this->session->getPage();
-        Assert::assertContains('increase the security of your account by enabling 2-Step', $page->getHtml());
+        Assert::assertContains('Please take a moment to review', $page->getHtml());
     }
 
     /**
-     * @Then there should be a way to go add MFA now
+     * @Then there should be a way to go update my profile now
      */
-    public function thereShouldBeAWayToGoAddMfaNow()
+    public function thereShouldBeAWayToGoUpdateMyProfileNow()
     {
         $page = $this->session->getPage();
-        $this->assertFormContains('name="setUpMfa"', $page);
-    }
-
-    /**
-     * @Then I should see a message encouraging me to add a(n) method
-     */
-    public function iShouldSeeAMessageEncouragingMeToAddAnMethod()
-    {
-        $page = $this->session->getPage();
-        Assert::assertContains('you can provide alternate email addresses', $page->getHtml());
-    }
-
-    /**
-     * @Then there should be a way to go add method now
-     */
-    public function thereShouldBeAWayToGoAddMethodNow()
-    {
-        $page = $this->session->getPage();
-        $this->assertFormContains('name="setUpMethod"', $page);
-    }
-
-    /**
-     * @Then I should see a message encouraging me to review a(n) mfa
-     */
-    public function iShouldSeeAMessageEncouragingMeToReviewAnMfa()
-    {
-        $page = $this->session->getPage();
-        Assert::assertContains('time to review your 2-Step', $page->getHtml());
-    }
-
-    /**
-     * @Then there should be a way to go review MFA now
-     */
-    public function thereShouldBeAWayToGoReviewMfaNow()
-    {
-        $page = $this->session->getPage();
-        $this->assertFormContains('name="setUpMfa"', $page);
-    }
-
-    /**
-     * @Then I should see a message encouraging me to review a(n) method
-     */
-    public function iShouldSeeAMessageEncouragingMeToReviewAMethod()
-    {
-        $page = $this->session->getPage();
-        Assert::assertContains('review your account recovery methods', $page->getHtml());
-    }
-
-    /**
-     * @Then there should be a way to go review method now
-     */
-    public function thereShouldBeAWayToGoReviewMethodNow()
-    {
-        $page = $this->session->getPage();
-        $this->assertFormContains('name="setUpMethod"', $page);
+        $this->assertFormContains('name="updateProfile"', $page);
     }
 }
