@@ -31,7 +31,6 @@ Example (for `metadata/saml20-idp-hosted.php`):
             'class' => 'profilereview:ProfileReview',
             'employeeIdAttr' => 'employeeNumber',
             'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
-            'methodLearnMoreUrl' => Env::get('METHOD_LEARN_MORE_URL'),
             'profileUrl' => Env::get('PROFILE_URL'),
 
             // Optional:
