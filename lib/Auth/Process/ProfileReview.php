@@ -215,17 +215,26 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         // Get the necessary info from the state data.
         $employeeId = $this->getAttribute($this->employeeIdAttr, $state);
         $isHeadedToProfileUrl = self::isHeadedToProfileUrl($state, $this->profileUrl);
+        $profileReview = $this->getAttribute('profile_review', $state);
 
-        if ($isHeadedToProfileUrl && $this->skipReviewWhenHeadedToProfile) {
+        if ($isHeadedToProfileUrl && $this->skipReviewWhenHeadedToProfile || $profileReview !== 'yes') {
+            $this->logger->warning(json_encode([
+                'module' => 'profilereview',
+                'event' => 'no review needed',
+                'isHeadedToProfileUrl' => $isHeadedToProfileUrl,
+                'profileReview' => $profileReview,
+                'employeeId' => $state['employeeId'],
+            ]));
+
+            unset($state['Attributes']['method']);
+            unset($state['Attributes']['mfa']);
             return;
         }
 
         // Record to the state what logger class to use.
         $state['loggerClass'] = $this->loggerClass;
-        
-        $state['ProfileUrl'] = $this->profileUrl;
 
-        $profileReview = $this->getAttribute('profile_review', $state);
+        $state['ProfileUrl'] = $this->profileUrl;
 
         /** @noinspection PhpUnusedLocalVariableInspection */
         $mfa = $this->getAttributeAllValues('mfa', $state);
@@ -236,15 +245,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         if ($profileReview == 'yes') {
             $this->redirectToNag($state, $employeeId, $mfa['options'], $method['options']);
         }
-
-        $this->logger->warning(json_encode([
-            'module' => 'profilereview',
-            'event' => 'no review needed',
-            'employeeId' => $state['employeeId'],
-        ]));
-
-        unset($state['Attributes']['method']);
-        unset($state['Attributes']['mfa']);
     }
 
     /**
