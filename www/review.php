@@ -33,7 +33,8 @@ $t->data['methodOptions'] = $state['methodOptions'];
 $t->data['mfaOptions'] = $state['mfaOptions'];
 $t->show();
 
-$logger->warning(sprintf(
-    'profilereview: Encouraged Employee ID %s to review profile.',
-    $state['employeeId']
-));
+$logger->warning(json_encode([
+    'module' => 'profilereview',
+    'event' => 'presented profile review',
+    'employeeId' => $state['employeeId'],
+]));

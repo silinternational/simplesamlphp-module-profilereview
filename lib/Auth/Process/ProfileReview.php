@@ -194,12 +194,12 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         }
         
         $logger = LoggerFactory::getAccordingToState($state);
-        $logger->warning(sprintf(
-            'profilereview: Sending Employee ID %s to set up profile at %s',
-            var_export($state['employeeId'] ?? null, true),
-            var_export($ProfileUrl, true)
-        ));
-        
+        $logger->warning(json_encode([
+            'module' => 'profilereview',
+            'event' => 'redirect to profile',
+            'employeeId' => $state['employeeId'],
+        ]));
+
         HTTP::redirectTrustedURL($ProfileUrl);
     }
     
@@ -237,6 +237,12 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
             $this->redirectToNag($state, $employeeId, $mfa['options'], $method['options']);
         }
 
+        $this->logger->warning(json_encode([
+            'module' => 'profilereview',
+            'event' => 'no review needed',
+            'employeeId' => $state['employeeId'],
+        ]));
+
         unset($state['Attributes']['method']);
         unset($state['Attributes']['mfa']);
     }
@@ -252,11 +258,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     protected function redirectToNag(&$state, $employeeId, $mfaOptions, $methodOptions)
     {
         assert('is_array($state)');
-
-        $this->logger->warning(sprintf(
-            'profilereview: Redirecting Employee ID %s to profile review.',
-            var_export($employeeId, true)
-        ));
 
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
