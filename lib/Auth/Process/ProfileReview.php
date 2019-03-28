@@ -48,7 +48,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         ]);
 
         $this->mfaLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
-        $this->skipReviewWhenHeadedToProfile = $config['skipReviewWhenHeadedToProfile'] ?? true;
+        $this->skipReviewWhenHeadedToProfile = $config['skipReviewWhenHeadedToProfile'] ?? false;
     }
 
     /**
