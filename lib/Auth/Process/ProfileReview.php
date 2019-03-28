@@ -253,7 +253,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     {
         assert('is_array($state)');
 
-        $this->logger->info(sprintf(
+        $this->logger->warning(sprintf(
             'profilereview: Redirecting Employee ID %s to profile review.',
             var_export($employeeId, true)
         ));

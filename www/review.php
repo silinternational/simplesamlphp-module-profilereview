@@ -33,7 +33,7 @@ $t->data['methodOptions'] = $state['methodOptions'];
 $t->data['mfaOptions'] = $state['mfaOptions'];
 $t->show();
 
-$logger->info(sprintf(
+$logger->warning(sprintf(
     'profilereview: Encouraged Employee ID %s to review profile.',
     $state['employeeId']
 ));
