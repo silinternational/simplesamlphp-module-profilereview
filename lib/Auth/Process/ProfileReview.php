@@ -182,17 +182,16 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
      */
     public static function redirectToProfile(&$state)
     {
-        $ProfileUrl = $state['ProfileUrl'];
-        
+        $profileUrl = $state['ProfileUrl'];
         // Tell the profile-setup URL where the user is ultimately trying to go (if known).
         $currentDestination = self::getRelayStateUrl($state);
         if (! empty($currentDestination)) {
-            $ProfileUrl = SimpleSAML\Utils\HTTP::addURLParameters(
-                $ProfileUrl,
+            $profileUrl = SimpleSAML\Utils\HTTP::addURLParameters(
+                $profileUrl,
                 ['returnTo' => $currentDestination]
             );
         }
-        
+
         $logger = LoggerFactory::getAccordingToState($state);
         $logger->warning(json_encode([
             'module' => 'profilereview',
@@ -200,9 +199,9 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
             'employeeId' => $state['employeeId'],
         ]));
 
-        HTTP::redirectTrustedURL($ProfileUrl);
+        HTTP::redirectTrustedURL($profileUrl);
     }
-    
+
     /**
      * Apply this AuthProc Filter. It will either return (indicating that it
      * has completed) or it will redirect the user, in which case it will
@@ -242,9 +241,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         /** @noinspection PhpUnusedLocalVariableInspection */
         $method = $this->getAttributeAllValues('method', $state);
 
-        if ($profileReview == 'yes') {
-            $this->redirectToNag($state, $employeeId, $mfa['options'], $method['options']);
-        }
+        $this->redirectToNag($state, $employeeId, $mfa['options'], $method['options']);
     }
 
     /**
