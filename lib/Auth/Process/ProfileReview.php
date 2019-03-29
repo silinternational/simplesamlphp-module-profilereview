@@ -18,7 +18,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     private $employeeIdAttr = null;
     private $mfaLearnMoreUrl = null;
     private $profileUrl = null;
-    private $skipReviewWhenHeadedToProfile = null;
 
     /** @var LoggerInterface */
     protected $logger;
@@ -48,7 +47,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         ]);
 
         $this->mfaLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
-        $this->skipReviewWhenHeadedToProfile = $config['skipReviewWhenHeadedToProfile'] ?? false;
     }
 
     /**
@@ -216,7 +214,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $isHeadedToProfileUrl = self::isHeadedToProfileUrl($state, $this->profileUrl);
         $profileReview = $this->getAttribute('profile_review', $state);
 
-        if ($isHeadedToProfileUrl && $this->skipReviewWhenHeadedToProfile || $profileReview !== 'yes') {
+        if ($isHeadedToProfileUrl || $profileReview !== 'yes') {
             $this->logger->warning(json_encode([
                 'module' => 'profilereview',
                 'event' => 'no review needed',
