@@ -222,7 +222,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
                 'event' => 'no review needed',
                 'isHeadedToProfileUrl' => $isHeadedToProfileUrl,
                 'profileReview' => $profileReview,
-                'employeeId' => $state['employeeId'],
+                'employeeId' => $employeeId,
             ]));
 
             unset($state['Attributes']['method']);
