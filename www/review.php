@@ -25,9 +25,7 @@ if (filter_has_var(INPUT_POST, 'updateProfile')) {
 
 $globalConfig = SimpleSAML_Configuration::getInstance();
 
-$template = 'profilereview:review.php';
-
-$t = new SimpleSAML_XHTML_Template($globalConfig, $template);
+$t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:review.php');
 $t->data['learnMoreUrl'] = $state['mfaLearnMoreUrl'];
 $t->data['methodOptions'] = $state['methodOptions'];
 $t->data['mfaOptions'] = $state['mfaOptions'];
