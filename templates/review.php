@@ -1,8 +1,8 @@
 <?php
-$this->data['header'] = 'Review 2-Step Verification';
+$this->data['header'] = 'Review 2-Step Verification and Password Recovery';
 $this->includeAtTemplateBase('includes/header.php');
 
-$learnMoreUrl = $this->data['learnMoreUrl'];
+$profileUrl = $this->data['profileUrl'];
 
 ?>
 <p>
@@ -45,7 +45,7 @@ $learnMoreUrl = $this->data['learnMoreUrl'];
     <?php endforeach; ?>
 </table>
 <form method="post">
-    <button name="updateProfile" style="padding: 4px 8px;">
+    <button name="update" style="padding: 4px 8px;">
         Update Profile
     </button>
     
@@ -53,9 +53,9 @@ $learnMoreUrl = $this->data['learnMoreUrl'];
         Remind me later
     </button>
 
-    <?php if (! empty($learnMoreUrl)): ?>
-        <p><a href="<?= htmlentities($learnMoreUrl) ?>"
-              target="_blank">Learn more</a></p>
+    <?php if (! empty($profileUrl)): ?>
+        <p><a href="<?= htmlentities($profileUrl) ?>"
+              target="_blank">Go to Profile</a></p>
     <?php endif; ?>
 </form>
 <?php
