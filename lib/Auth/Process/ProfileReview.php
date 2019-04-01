@@ -46,7 +46,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
             'employeeIdAttr',
         ]);
 
-        $this->mfaLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
+        $this->profileUrl = $config['profileUrl'] ?? null;
     }
 
     /**
@@ -256,8 +256,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
 
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
-        $state['mfaLearnMoreUrl'] = $this->mfaLearnMoreUrl;
-        $state['ProfileUrl'] = $this->profileUrl;
+        $state['profileUrl'] = $this->profileUrl;
         $state['mfaOptions'] = $mfaOptions;
         $state['methodOptions'] = $methodOptions;
 

@@ -34,7 +34,6 @@ $metadata['http://profilereview-idp.local:8285'] = [
         10 => [
             'class' => 'profilereview:ProfileReview',
             'employeeIdAttr' => 'employeeNumber',
-            'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
             'profileUrl' => Env::get('PROFILE_URL'),
             'loggerClass' => Psr3SamlLogger::class,
         ],
@@ -68,7 +67,6 @@ $metadata['http://idp'] = [
         10 => [
             'class' => 'profilereview:ProfileReview',
             'employeeIdAttr' => 'employeeNumber',
-            'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
 	        'profileUrl' => Env::get('PROFILE_URL_FOR_TESTS'), // *** DIFFERENT! ***
             'loggerClass' => Psr3SamlLogger::class,
         ],

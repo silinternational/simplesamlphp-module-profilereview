@@ -245,7 +245,7 @@ class ProfileReviewContext implements Context
      */
     public function iClickTheUpdateProfileButton()
     {
-        $this->submitFormByClickingButtonNamed('updateProfile');
+        $this->submitFormByClickingButtonNamed('update');
     }
 
     /**
@@ -278,6 +278,6 @@ class ProfileReviewContext implements Context
     public function thereShouldBeAWayToGoUpdateMyProfileNow()
     {
         $page = $this->session->getPage();
-        $this->assertFormContains('name="updateProfile"', $page);
+        $this->assertFormContains('name="update"', $page);
     }
 }

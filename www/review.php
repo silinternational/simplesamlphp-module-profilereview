@@ -12,7 +12,7 @@ $state = SimpleSAML_Auth_State::loadState($stateId, ProfileReview::STAGE_SENT_TO
 $logger = LoggerFactory::getAccordingToState($state);
 
 // If the user has pressed the set-up-Method button...
-if (filter_has_var(INPUT_POST, 'updateProfile')) {
+if (filter_has_var(INPUT_POST, 'update')) {
     ProfileReview::redirectToProfile($state);
     return;
 } elseif (filter_has_var(INPUT_POST, 'continue')) {
@@ -26,7 +26,7 @@ if (filter_has_var(INPUT_POST, 'updateProfile')) {
 $globalConfig = SimpleSAML_Configuration::getInstance();
 
 $t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:review.php');
-$t->data['learnMoreUrl'] = $state['mfaLearnMoreUrl'];
+$t->data['profileUrl'] = $state['profileUrl'];
 $t->data['methodOptions'] = $state['methodOptions'];
 $t->data['mfaOptions'] = $state['mfaOptions'];
 $t->show();
