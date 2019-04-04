@@ -12,8 +12,8 @@ $config = [
 
     'profilereview-idp' => [
         'saml:SP',
-        'entityID' => 'http://profilereview-pw-manager.local:8282',
-        'idp' => 'http://profilereview-idp.local:8285',
+        'entityID' => 'http://profilereview-pw-manager.local:52042',
+        'idp' => 'http://profilereview-idp.local:52040',
         'discoURL' => null,
         'NameIDPolicy' => "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent",
     ],
