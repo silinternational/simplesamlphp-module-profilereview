@@ -254,6 +254,12 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     {
         assert('is_array($state)');
 
+        foreach ($mfaOptions as $key => $mfaOption) {
+            if ($mfaOption['type'] === 'manager') {
+                unset ($mfaOptions[$key]);
+            }
+        }
+
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
         $state['profileUrl'] = $this->profileUrl;

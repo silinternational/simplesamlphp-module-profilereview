@@ -280,4 +280,24 @@ class ProfileReviewContext implements Context
         $page = $this->session->getPage();
         $this->assertFormContains('name="update"', $page);
     }
+
+    /**
+     * @Given I provide credentials for a user that has used the manager mfa option
+     */
+    public function iProvideCredentialsForAUserThatHasUsedTheManagerMfaOption()
+    {
+        // See `development/idp-local/config/authsources.php` for options.
+        $this->username = 'method_review';
+        $this->password = 'a';
+    }
+
+    /**
+     * @Then I should not see any manager mfa information
+     */
+    public function iShouldNotSeeAnyManagerMfaInformation()
+    {
+        $page = $this->session->getPage();
+        $isManagerMfaPresent = $page->hasContent('manager');
+        Assert::assertFalse($isManagerMfaPresent, 'found manager mfa data');
+    }
 }
