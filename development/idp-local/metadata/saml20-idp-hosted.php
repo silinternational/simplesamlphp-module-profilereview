@@ -8,7 +8,7 @@ use Sil\Psr3Adapters\Psr3SamlLogger;
  *
  * See: https://simplesamlphp.org/docs/stable/simplesamlphp-reference-idp-hosted
  */
-$metadata['http://profilereview-idp.local:8285'] = [
+$metadata['http://profilereview-idp.local:52040'] = [
     /*
      * The hostname of the server (VHOST) that will use this SAML entity.
      *
