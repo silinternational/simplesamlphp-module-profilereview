@@ -121,6 +121,15 @@ $config = [
                                 'count' => 10
                             ],
                         ],
+                        [
+                            'id' => 556,
+                            'type' => 'manager',
+                            'label' => '2SV #2',
+                            'created_utc' => '2017-10-24T20:40:47Z',
+                            'last_used_utc' => '2017-10-24T20:41:57Z',
+                            'data' => [
+                            ],
+                        ],
                     ],
                 ],
                 'method' => [
