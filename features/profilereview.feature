@@ -14,7 +14,7 @@ Feature: Prompt to review profile information
 
     Examples:
       | category | nag type |
-      | mfa      | add      |
+#      | mfa      | add      |
       | method   | add      |
       | mfa      | review   |
       | method   | review   |
@@ -27,7 +27,7 @@ Feature: Prompt to review profile information
 
     Examples:
       | category | nag type |
-      | mfa      | add      |
+#      | mfa      | add      |
       | method   | add      |
       | mfa      | review   |
       | method   | review   |
@@ -40,7 +40,7 @@ Feature: Prompt to review profile information
 
     Examples:
       | category | nag type |
-      | mfa      | add      |
+#      | mfa      | add      |
       | method   | add      |
       | mfa      | review   |
       | method   | review   |
