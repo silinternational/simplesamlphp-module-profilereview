@@ -233,13 +233,12 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
 
         $state['ProfileUrl'] = $this->profileUrl;
 
-        /** @noinspection PhpUnusedLocalVariableInspection */
         $mfa = $this->getAttributeAllValues('mfa', $state);
-
-        /** @noinspection PhpUnusedLocalVariableInspection */
         $method = $this->getAttributeAllValues('method', $state);
 
-        $this->redirectToNag($state, $employeeId, $mfa['options'], $method['options']);
+        if (count($mfa['options']) > 0 || count($method['options']) > 0) {
+            $this->redirectToNag($state, $employeeId, $mfa['options'], $method['options']);
+        }
     }
 
     /**
