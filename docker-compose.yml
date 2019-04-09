@@ -3,11 +3,11 @@ version: "2"
 services:
 
   idp:
-    image: silintl/ssp-base:develop
+    image: silintl/ssp-base:feature_add-profilereview
     ports:
-      - "8285:80"
+      - "52040:80"
     volumes:
-      - ./:/profilereview
+      - ./:/data/vendor/simplesamlphp/simplesamlphp/modules/profilereview
       - ./development/enable-debug.sh:/data/enable-debug.sh
       - ./development/run-dev.sh:/data/run-dev.sh
       - ./development/run-tests.sh:/data/run-tests.sh
@@ -36,7 +36,7 @@ services:
       - ADMIN_EMAIL=john_doe@example.com
       - ADMIN_PASS=a
       - IDP_NAME=Local IdP
-      - PROFILE_URL=http://profilereview-pw-manager.local:8282/module.php/core/authenticate.php?as=profilereview-idp
+      - PROFILE_URL=http://profilereview-pw-manager.local:52042/module.php/core/authenticate.php?as=profilereview-idp
       - PROFILE_URL_FOR_TESTS=http://pwmanager/module.php/core/authenticate.php?as=profilereview-idp-no-port
       - SECRET_SALT=NOT-a-SECRET-1362102e525237994020fb7ff18753c8
       - SECURE_COOKIE=false
@@ -48,7 +48,7 @@ services:
     command: ["/data/run-dev.sh"]
 
   sp:
-    image: silintl/ssp-base:develop
+    image: silintl/ssp-base:feature_add-profilereview
     volumes:
       # Utilize custom certs
       - ./development/sp-local/cert:/data/vendor/simplesamlphp/simplesamlphp/cert
@@ -59,7 +59,7 @@ services:
       # Utilize custom metadata
       - ./development/sp-local/metadata/saml20-idp-remote.php:/data/vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-remote.php
     ports:
-      - "8281:80"
+      - "52041:80"
     environment:
       - ADMIN_EMAIL=john_doe@example.com
       - ADMIN_PASS=sp1
@@ -72,7 +72,7 @@ services:
       - THEME_USE=default
 
   pwmanager:
-    image: silintl/ssp-base:develop
+    image: silintl/ssp-base:feature_add-profilereview
     volumes:
       # Utilize custom certs
       - ./development/sp-local/cert:/data/vendor/simplesamlphp/simplesamlphp/cert
@@ -83,7 +83,7 @@ services:
       # Utilize custom metadata
       - ./development/sp-local/metadata/saml20-idp-remote.php:/data/vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-remote.php
     ports:
-      - "8282:80"
+      - "52042:80"
     environment:
       - ADMIN_EMAIL=john_doe@example.com
       - ADMIN_PASS=sp1
@@ -96,7 +96,7 @@ services:
       - THEME_USE=default
 
   composer:
-    image: silintl/ssp-base:develop
+    image: silintl/ssp-base:feature_add-profilereview
     volumes:
       - ./composer.json:/data/composer.json
       - ./composer.lock:/data/composer.lock
@@ -110,7 +110,7 @@ services:
     working_dir: /data
 
   tests:
-    image: silintl/ssp-base:develop
+    image: silintl/ssp-base:feature_add-profilereview
     volumes_from:
       - idp
     volumes:
@@ -118,6 +118,7 @@ services:
       - ./composer.lock:/data/composer.lock
       - ./development/run-tests.sh:/data/run-tests.sh
       - ./features:/data/features
+      - ./features/behat.yml:/data/behat.yml
       - ./src:/data/src
       - ./vendor:/data/vendor
       - ${COMPOSER_CACHE_DIR}:/composer

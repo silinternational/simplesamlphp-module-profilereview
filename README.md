@@ -30,11 +30,6 @@ Example (for `metadata/saml20-idp-hosted.php`):
             // Required:
             'class' => 'profilereview:ProfileReview',
             'employeeIdAttr' => 'employeeNumber',
-            'idBrokerAccessToken' => Env::get('ID_BROKER_ACCESS_TOKEN'),
-            'idBrokerAssertValidIp' => Env::get('ID_BROKER_ASSERT_VALID_IP'),
-            'idBrokerBaseUri' => Env::get('ID_BROKER_BASE_URI'),
-            'idBrokerTrustedIpRanges' => Env::get('ID_BROKER_TRUSTED_IP_RANGES'),
-            'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
             'profileUrl' => Env::get('PROFILE_URL'),
 
             // Optional:
@@ -64,11 +59,11 @@ with the IP address of your docker containers.
 Run `make test`.
 
 ### Manual Testing ###
-Go to <http://profilereview-sp.local:8281/module.php/core/authenticate.php?as=profilereview-idp> in
+Go to <http://profilereview-sp.local:52041/module.php/core/authenticate.php?as=profilereview-idp> in
 your browser and sign in with one of the users defined in
 `development/idp-local/config/authsources.php`.
 
-Go to <http://profilereview-sp.local:8281/module.php/core/as_logout.php?ReturnTo=/&AuthId=profilereview-idp>
+Go to <http://profilereview-sp.local:52041/module.php/core/as_logout.php?ReturnTo=authenticate.php%3Fas%3Dprofilereview-idp&AuthId=profilereview-idp>
 to logout.
 
 ## Contributing ##

@@ -4,8 +4,10 @@ runny ./setup-logentries.sh
 
 runny composer install --no-interaction --no-scripts
 
-# Give composer time to install any new dependencies of this project
-sleep 200
+whenavail idp 80 200 echo idp ready, starting behat...
 
 # Run the feature tests
-./vendor/bin/behat --config=features/behat.yml
+./vendor/bin/behat --format-settings='{"expand": true}'
+
+# Example command line to run a single test
+#./vendor/bin/behat --format-settings='{"expand": true}' features/profilereview.feature:17
