@@ -6,7 +6,7 @@ $profileUrl = $this->data['profileUrl'];
 
 ?>
 <p>
-    Please take a moment to review your 2-Factor Authentication Options and
+    Please take a moment to review your 2-Step Verification options and
     Password Recovery Methods.
 </p>
 <p>
