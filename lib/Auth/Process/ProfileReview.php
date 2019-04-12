@@ -218,23 +218,23 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
             return;
         }
 
-        $mfa = $this->getAttributeAllValues('mfa', $state);
-        $method = $this->getAttributeAllValues('method', $state);
-        $profileReview = $this->getAttribute('profile_review', $state);
 
         // Record to the state what logger class to use.
         $state['loggerClass'] = $this->loggerClass;
 
         $state['ProfileUrl'] = $this->profileUrl;
 
+        $mfa = $this->getAttributeAllValues('mfa', $state);
         if ($mfa['add'] === 'yes') {
             $this->redirectToNag($state, $employeeId, 'nag-for-mfa.php');
         }
 
+        $method = $this->getAttributeAllValues('method', $state);
         if ($method['add'] === 'yes') {
             $this->redirectToNag($state, $employeeId, 'nag-for-method.php');
         }
 
+        $profileReview = $this->getAttribute('profile_review', $state);
         if ($profileReview === 'yes' && (count($mfa['options']) > 0 || count($method['options'])) > 0) {
             $this->redirectToProfileReview($state, $employeeId, $mfa['options'], $method['options']);
         }
