@@ -12,7 +12,7 @@ $profileUrl = $this->data['profileUrl'];
 <p>
     We highly encourage you to do this for your own safety.
 </p>
-<h3>2-Factor Authentication</h3>
+<h3>2-Step Verification</h3>
 <table>
     <tr>
         <th>Label</th>
