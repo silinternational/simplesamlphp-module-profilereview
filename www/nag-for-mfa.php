@@ -25,14 +25,12 @@ if (filter_has_var(INPUT_POST, 'update')) {
 
 $globalConfig = SimpleSAML_Configuration::getInstance();
 
-$t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:review.php');
+$t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:nag-for-mfa.php');
 $t->data['profileUrl'] = $state['profileUrl'];
-$t->data['methodOptions'] = $state['methodOptions'];
-$t->data['mfaOptions'] = $state['mfaOptions'];
 $t->show();
 
 $logger->warning(json_encode([
     'module' => 'profilereview',
-    'event' => 'presented profile review',
+    'event' => 'presented mfa nag',
     'employeeId' => $state['employeeId'],
 ]));

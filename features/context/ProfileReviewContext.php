@@ -287,7 +287,7 @@ class ProfileReviewContext implements Context
     public function iProvideCredentialsForAUserThatHasUsedTheManagerMfaOption()
     {
         // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'method_review';
+        $this->username = 'profile_review';
         $this->password = 'a';
     }
 
