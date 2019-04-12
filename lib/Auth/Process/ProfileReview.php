@@ -272,9 +272,10 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $state['profileUrl'] = $this->profileUrl;
         $state['mfaOptions'] = $mfaOptions;
         $state['methodOptions'] = $methodOptions;
+        $state['template'] = 'review.php';
 
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
-        $url = SimpleSAML\Module::getModuleURL('profilereview/review.php');
+        $url = SimpleSAML\Module::getModuleURL('profilereview/nag.php');
 
         HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
     }

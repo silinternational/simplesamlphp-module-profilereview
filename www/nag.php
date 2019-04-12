@@ -27,6 +27,8 @@ $globalConfig = SimpleSAML_Configuration::getInstance();
 
 $t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:' . $state['template']);
 $t->data['profileUrl'] = $state['profileUrl'];
+$t->data['methodOptions'] = $state['methodOptions'];
+$t->data['mfaOptions'] = $state['mfaOptions'];
 $t->show();
 
 $logger->warning(json_encode([
