@@ -212,31 +212,26 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $employeeId = $this->getAttribute($this->employeeIdAttr, $state);
         $isHeadedToProfileUrl = self::isHeadedToProfileUrl($state, $this->profileUrl);
 
-        if ($isHeadedToProfileUrl) {
-            unset($state['Attributes']['method']);
-            unset($state['Attributes']['mfa']);
-            return;
-        }
+        if (! $isHeadedToProfileUrl) {
+            // Record to the state what logger class to use.
+            $state['loggerClass'] = $this->loggerClass;
 
+            $state['ProfileUrl'] = $this->profileUrl;
 
-        // Record to the state what logger class to use.
-        $state['loggerClass'] = $this->loggerClass;
+            $mfa = $this->getAttributeAllValues('mfa', $state);
+            if ($mfa['add'] === 'yes') {
+                $this->redirectToNag($state, $employeeId, 'nag-for-mfa.php');
+            }
 
-        $state['ProfileUrl'] = $this->profileUrl;
+            $method = $this->getAttributeAllValues('method', $state);
+            if ($method['add'] === 'yes') {
+                $this->redirectToNag($state, $employeeId, 'nag-for-method.php');
+            }
 
-        $mfa = $this->getAttributeAllValues('mfa', $state);
-        if ($mfa['add'] === 'yes') {
-            $this->redirectToNag($state, $employeeId, 'nag-for-mfa.php');
-        }
-
-        $method = $this->getAttributeAllValues('method', $state);
-        if ($method['add'] === 'yes') {
-            $this->redirectToNag($state, $employeeId, 'nag-for-method.php');
-        }
-
-        $profileReview = $this->getAttribute('profile_review', $state);
-        if ($profileReview === 'yes' && (count($mfa['options']) > 0 || count($method['options'])) > 0) {
-            $this->redirectToProfileReview($state, $employeeId, $mfa['options'], $method['options']);
+            $profileReview = $this->getAttribute('profile_review', $state);
+            if ($profileReview === 'yes' && (count($mfa['options']) > 0 || count($method['options'])) > 0) {
+                $this->redirectToProfileReview($state, $employeeId, $mfa['options'], $method['options']);
+            }
         }
 
         $this->logger->warning(json_encode([
