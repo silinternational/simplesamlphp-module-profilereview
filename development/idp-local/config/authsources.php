@@ -13,6 +13,7 @@ $config = [
                 'cn' => ['NO_REVIEW'],
                 'mfa' => [
                     'prompt' => 'yes',
+                    'add' => 'no',
                     'options' => [
                         [
                             'id' => 111,
@@ -27,6 +28,7 @@ $config = [
                     ],
                 ],
                 'method' => [
+                    'add' => 'no',
                 ],
                 'profile_review' => 'no'
             ],
@@ -40,38 +42,13 @@ $config = [
                 'cn' => ['MFA_ADD'],
                 'mfa' => [
                     'prompt' => 'no',
+                    'add' => 'yes',
                     'options' => [],
                 ],
                 'method' => [
+                    'add' => 'no',
                 ],
-                'profile_review' => 'yes'
-            ],
-            'mfa_review:a' => [
-                'eduPersonPrincipalName' => ['MFA_REVIEW@idp'],
-                'eduPersonTargetID' => ['33333333-3333-3333-3333-333333333333'],
-                'sn' => ['Review'],
-                'givenName' => ['Mfa'],
-                'mail' => ['mfa_review@example.com'],
-                'employeeNumber' => ['33333'],
-                'cn' => ['MFA_REVIEW'],
-                'mfa' => [
-                    'prompt' => 'yes',
-                    'options' => [
-                        [
-                            'id' => 333,
-                            'type' => 'backupcode',
-                            'label' => '2SV #1',
-                            'created_utc' => '2017-10-24T20:40:47Z',
-                            'last_used_utc' => null,
-                            'data' => [
-                                'count' => 10
-                            ],
-                        ],
-                    ],
-                ],
-                'method' => [
-                ],
-                'profile_review' => 'yes'
+                'profile_review' => 'no'
             ],
             'method_add:a' => [
                 'eduPersonPrincipalName' => ['METHOD_ADD@methodidp'],
@@ -83,6 +60,7 @@ $config = [
                 'cn' => ['METHOD_ADD'],
                 'mfa' => [
                     'prompt' => 'yes',
+                    'add' => 'no',
                     'options' => [
                         [
                             'id' => 444,
@@ -97,10 +75,11 @@ $config = [
                     ],
                 ],
                 'method' => [
+                    'add' => 'yes',
                 ],
-                'profile_review' => 'yes'
+                'profile_review' => 'no'
             ],
-            'method_review:a' => [
+            'profile_review:a' => [
                 'eduPersonPrincipalName' => ['METHOD_REVIEW@methodidp'],
                 'eduPersonTargetID' => ['55555555-5555-5555-5555-555555555555'],
                 'sn' => ['Review'],
@@ -110,6 +89,7 @@ $config = [
                 'cn' => ['METHOD_REVIEW'],
                 'mfa' => [
                     'prompt' => 'yes',
+                    'add' => 'no',
                     'options' => [
                         [
                             'id' => 555,
@@ -133,6 +113,7 @@ $config = [
                     ],
                 ],
                 'method' => [
+                    'add' => 'no',
                     'options' => [
                         [
                             'id' => '55555555555555555555555555555555',

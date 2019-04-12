@@ -11,7 +11,7 @@ if (empty($stateId)) {
 $state = SimpleSAML_Auth_State::loadState($stateId, ProfileReview::STAGE_SENT_TO_NAG);
 $logger = LoggerFactory::getAccordingToState($state);
 
-// If the user has pressed the set-up-Method button...
+// If the user has pressed the update button...
 if (filter_has_var(INPUT_POST, 'update')) {
     ProfileReview::redirectToProfile($state);
     return;
@@ -25,7 +25,7 @@ if (filter_has_var(INPUT_POST, 'update')) {
 
 $globalConfig = SimpleSAML_Configuration::getInstance();
 
-$t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:review.php');
+$t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:' . $state['template']);
 $t->data['profileUrl'] = $state['profileUrl'];
 $t->data['methodOptions'] = $state['methodOptions'];
 $t->data['mfaOptions'] = $state['mfaOptions'];
@@ -33,6 +33,7 @@ $t->show();
 
 $logger->warning(json_encode([
     'module' => 'profilereview',
-    'event' => 'presented profile review',
+    'event' => 'presented nag',
+    'template' => $state['template'],
     'employeeId' => $state['employeeId'],
 ]));

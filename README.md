@@ -1,6 +1,6 @@
 # Profile Review simpleSAMLphp Module #
 A simpleSAMLphp module for prompting the user review their profile (such as
-2-factor authentication, email, etc.).
+2-step verification, email, etc.).
 
 This module is implemented as an Authentication Processing Filter, 
 or AuthProc. That means it can be configured in the global config.php file or 
