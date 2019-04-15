@@ -15,6 +15,8 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     const SESSION_TYPE = 'profilereview';
     const STAGE_SENT_TO_NAG = 'profilereview:sent_to_nag';
 
+    const HAS_SEEN_SPLASH_PAGE = 'has_seen_splash_page';
+
     private $employeeIdAttr = null;
     private $mfaLearnMoreUrl = null;
     private $profileUrl = null;
@@ -214,17 +216,29 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $isHeadedToProfileUrl = self::isHeadedToProfileUrl($state, $this->profileUrl);
         $profileReview = $this->getAttribute('profile_review', $state);
 
+        $log = [
+            'module' => 'profilereview',
+            'isHeadedToProfileUrl' => $isHeadedToProfileUrl,
+            'profileReview' => $profileReview,
+            'employeeId' => $employeeId,
+        ];
+
         if ($isHeadedToProfileUrl || $profileReview !== 'yes') {
-            $this->logger->warning(json_encode([
-                'module' => 'profilereview',
-                'event' => 'no review needed',
-                'isHeadedToProfileUrl' => $isHeadedToProfileUrl,
-                'profileReview' => $profileReview,
-                'employeeId' => $employeeId,
-            ]));
+            $log['event'] = 'no review needed';
+            $this->logger->warning(json_encode($log));
 
             unset($state['Attributes']['method']);
             unset($state['Attributes']['mfa']);
+            SimpleSAML_Auth_ProcessingChain::resumeProcessing($state);
+            return;
+        }
+
+        /* If the user has already seen a splash page from this AuthProc
+         * recently, simply let them pass on through
+         */
+        if (self::hasSeenSplashPageRecently()) {
+            $log['event'] = 'skip review, seen recently';
+            $this->logger->warning(json_encode($log));
             return;
         }
 
@@ -264,11 +278,32 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $state['profileUrl'] = $this->profileUrl;
         $state['mfaOptions'] = $mfaOptions;
         $state['methodOptions'] = $methodOptions;
-        $state['Attributes']['profile_review'] = 'no';
 
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
         $url = SimpleSAML\Module::getModuleURL(sprintf('profilereview/review.php'));
 
         HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
     }
+
+    public static function hasSeenSplashPageRecently()
+    {
+        $session = SimpleSAML_Session::getSession();
+        return (bool)$session->getData(
+            self::SESSION_TYPE,
+            self::HAS_SEEN_SPLASH_PAGE
+        );
+    }
+
+    public static function skipSplashPagesFor($seconds)
+    {
+        $session = SimpleSAML_Session::getSession();
+        $session->setData(
+            self::SESSION_TYPE,
+            self::HAS_SEEN_SPLASH_PAGE,
+            true,
+            $seconds
+        );
+        $session->save();
+    }
+
 }
