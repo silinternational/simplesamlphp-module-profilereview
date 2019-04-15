@@ -307,5 +307,4 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         );
         $session->save();
     }
-
 }
