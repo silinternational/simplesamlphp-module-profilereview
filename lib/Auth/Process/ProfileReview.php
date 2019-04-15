@@ -238,6 +238,9 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         if (self::hasSeenSplashPageRecently()) {
             $log['event'] = 'skip review, seen recently';
             $this->logger->warning(json_encode($log));
+
+            unset($state['Attributes']['method']);
+            unset($state['Attributes']['mfa']);
             return;
         }
 
