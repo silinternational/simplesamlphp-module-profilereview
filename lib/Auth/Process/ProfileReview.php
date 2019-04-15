@@ -264,6 +264,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $state['profileUrl'] = $this->profileUrl;
         $state['mfaOptions'] = $mfaOptions;
         $state['methodOptions'] = $methodOptions;
+        $state['Attributes']['profile_review'] = 'no';
 
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
         $url = SimpleSAML\Module::getModuleURL(sprintf('profilereview/review.php'));
