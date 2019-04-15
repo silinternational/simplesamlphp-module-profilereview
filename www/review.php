@@ -11,14 +11,10 @@ if (empty($stateId)) {
 $state = SimpleSAML_Auth_State::loadState($stateId, ProfileReview::STAGE_SENT_TO_NAG);
 $logger = LoggerFactory::getAccordingToState($state);
 
-<<<<<<< HEAD:www/nag.php
-// If the user has pressed the update button...
-=======
 /* Skip the splash page for awhile to avoid annoying them with constant warnings. */
 ProfileReview::skipSplashPagesFor(24 * 60 * 60);
 
 // If the user has pressed the set-up-Method button...
->>>>>>> skip-review-if-seen:www/review.php
 if (filter_has_var(INPUT_POST, 'update')) {
     ProfileReview::redirectToProfile($state);
     return;
@@ -32,7 +28,7 @@ if (filter_has_var(INPUT_POST, 'update')) {
 
 $globalConfig = SimpleSAML_Configuration::getInstance();
 
-$t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:' . $state['template']);
+$t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:review.php');
 $t->data['profileUrl'] = $state['profileUrl'];
 $t->data['methodOptions'] = $state['methodOptions'];
 $t->data['mfaOptions'] = $state['mfaOptions'];
@@ -40,7 +36,6 @@ $t->show();
 
 $logger->warning(json_encode([
     'module' => 'profilereview',
-    'event' => 'presented nag',
-    'template' => $state['template'],
+    'event' => 'presented profile review',
     'employeeId' => $state['employeeId'],
 ]));
