@@ -229,7 +229,6 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
 
             unset($state['Attributes']['method']);
             unset($state['Attributes']['mfa']);
-            SimpleSAML_Auth_ProcessingChain::resumeProcessing($state);
             return;
         }
 
