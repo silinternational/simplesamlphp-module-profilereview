@@ -29,6 +29,7 @@ $t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:' . $state['tem
 $t->data['profileUrl'] = $state['profileUrl'];
 $t->data['methodOptions'] = $state['methodOptions'];
 $t->data['mfaOptions'] = $state['mfaOptions'];
+$t->data['mfaLearnMoreUrl'] = $state['mfaLearnMoreUrl'];
 $t->show();
 
 $logger->warning(json_encode([

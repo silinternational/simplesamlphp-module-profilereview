@@ -31,6 +31,7 @@ Example (for `metadata/saml20-idp-hosted.php`):
             'class' => 'profilereview:ProfileReview',
             'employeeIdAttr' => 'employeeNumber',
             'profileUrl' => Env::get('PROFILE_URL'),
+            'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
 
             // Optional:
             'loggerClass' => Psr3SamlLogger::class,
