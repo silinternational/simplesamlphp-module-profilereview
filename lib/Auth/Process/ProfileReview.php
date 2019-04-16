@@ -20,6 +20,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     const METHOD_ADD_PAGE = 'nag-for-method.php';
 
     private $employeeIdAttr = null;
+    private $mfaLearnMoreUrl = null;
     private $profileUrl = null;
 
     /** @var LoggerInterface */
@@ -49,6 +50,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
             'employeeIdAttr',
         ]);
 
+        $this->mfaLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
         $this->profileUrl = $config['profileUrl'] ?? null;
     }
 
@@ -298,6 +300,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     {
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
+        $state['mfaLearnMoreUrl'] = $this->mfaLearnMoreUrl;
         $state['profileUrl'] = $this->profileUrl;
         $state['template'] = $template;
 
