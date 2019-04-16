@@ -3,7 +3,7 @@ version: "2"
 services:
 
   idp:
-    image: silintl/ssp-base:feature_add-profilereview
+    image: silintl/ssp-base:develop
     ports:
       - "52040:80"
     volumes:
@@ -48,7 +48,7 @@ services:
     command: ["/data/run-dev.sh"]
 
   sp:
-    image: silintl/ssp-base:feature_add-profilereview
+    image: silintl/ssp-base:develop
     volumes:
       # Utilize custom certs
       - ./development/sp-local/cert:/data/vendor/simplesamlphp/simplesamlphp/cert
@@ -72,7 +72,7 @@ services:
       - THEME_USE=default
 
   pwmanager:
-    image: silintl/ssp-base:feature_add-profilereview
+    image: silintl/ssp-base:develop
     volumes:
       # Utilize custom certs
       - ./development/sp-local/cert:/data/vendor/simplesamlphp/simplesamlphp/cert
@@ -96,7 +96,7 @@ services:
       - THEME_USE=default
 
   composer:
-    image: silintl/ssp-base:feature_add-profilereview
+    image: silintl/ssp-base:develop
     volumes:
       - ./composer.json:/data/composer.json
       - ./composer.lock:/data/composer.lock
@@ -110,7 +110,7 @@ services:
     working_dir: /data
 
   tests:
-    image: silintl/ssp-base:feature_add-profilereview
+    image: silintl/ssp-base:develop
     volumes_from:
       - idp
     volumes:
