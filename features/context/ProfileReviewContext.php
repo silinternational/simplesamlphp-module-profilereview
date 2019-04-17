@@ -264,12 +264,12 @@ class ProfileReviewContext implements Context
     }
 
     /**
-     * @Then I should see a message encouraging me to review my profile
+     * @Then I should see the message: :message
      */
-    public function iShouldSeeAMessageEncouragingMeToReviewMyProfile()
+    public function iShouldSeeTheMessage($message)
     {
         $page = $this->session->getPage();
-        Assert::assertContains('Please take a moment to review', $page->getHtml());
+        Assert::assertContains($message, $page->getHtml());
     }
 
     /**
@@ -287,7 +287,7 @@ class ProfileReviewContext implements Context
     public function iProvideCredentialsForAUserThatHasUsedTheManagerMfaOption()
     {
         // See `development/idp-local/config/authsources.php` for options.
-        $this->username = 'method_review';
+        $this->username = 'profile_review';
         $this->password = 'a';
     }
 

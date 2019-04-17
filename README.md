@@ -1,6 +1,6 @@
 # Profile Review simpleSAMLphp Module #
 A simpleSAMLphp module for prompting the user review their profile (such as
-2-factor authentication, email, etc.).
+2-step verification, email, etc.).
 
 This module is implemented as an Authentication Processing Filter, 
 or AuthProc. That means it can be configured in the global config.php file or 
@@ -31,6 +31,7 @@ Example (for `metadata/saml20-idp-hosted.php`):
             'class' => 'profilereview:ProfileReview',
             'employeeIdAttr' => 'employeeNumber',
             'profileUrl' => Env::get('PROFILE_URL'),
+            'mfaLearnMoreUrl' => Env::get('MFA_LEARN_MORE_URL'),
 
             // Optional:
             'loggerClass' => Psr3SamlLogger::class,

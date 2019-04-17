@@ -15,7 +15,9 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     const SESSION_TYPE = 'profilereview';
     const STAGE_SENT_TO_NAG = 'profilereview:sent_to_nag';
 
-    const HAS_SEEN_SPLASH_PAGE = 'has_seen_splash_page';
+    const REVIEW_PAGE = 'review.php';
+    const MFA_ADD_PAGE = 'nag-for-mfa.php';
+    const METHOD_ADD_PAGE = 'nag-for-method.php';
 
     private $employeeIdAttr = null;
     private $mfaLearnMoreUrl = null;
@@ -48,6 +50,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
             'employeeIdAttr',
         ]);
 
+        $this->mfaLearnMoreUrl = $config['mfaLearnMoreUrl'] ?? null;
         $this->profileUrl = $config['profileUrl'] ?? null;
     }
 
@@ -214,58 +217,55 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         // Get the necessary info from the state data.
         $employeeId = $this->getAttribute($this->employeeIdAttr, $state);
         $isHeadedToProfileUrl = self::isHeadedToProfileUrl($state, $this->profileUrl);
-        $profileReview = $this->getAttribute('profile_review', $state);
-
-        $log = [
-            'module' => 'profilereview',
-            'isHeadedToProfileUrl' => $isHeadedToProfileUrl,
-            'profileReview' => $profileReview,
-            'employeeId' => $employeeId,
-        ];
-
-        if ($isHeadedToProfileUrl || $profileReview !== 'yes') {
-            $log['event'] = 'no review needed';
-            $this->logger->warning(json_encode($log));
-
-            unset($state['Attributes']['method']);
-            unset($state['Attributes']['mfa']);
-            return;
-        }
-
-        /* If the user has already seen a splash page from this AuthProc
-         * recently, simply let them pass on through
-         */
-        if (self::hasSeenSplashPageRecently()) {
-            $log['event'] = 'skip review, seen recently';
-            $this->logger->warning(json_encode($log));
-
-            unset($state['Attributes']['method']);
-            unset($state['Attributes']['mfa']);
-            return;
-        }
-
-        // Record to the state what logger class to use.
-        $state['loggerClass'] = $this->loggerClass;
-
-        $state['ProfileUrl'] = $this->profileUrl;
 
         $mfa = $this->getAttributeAllValues('mfa', $state);
         $method = $this->getAttributeAllValues('method', $state);
+        $profileReview = $this->getAttribute('profile_review', $state);
 
-        if (count($mfa['options']) > 0 || count($method['options']) > 0) {
-            $this->redirectToNag($state, $employeeId, $mfa['options'], $method['options']);
+        if (! $isHeadedToProfileUrl) {
+            // Record to the state what logger class to use.
+            $state['loggerClass'] = $this->loggerClass;
+
+            $state['ProfileUrl'] = $this->profileUrl;
+
+            if (self::needToShow($mfa['add'], self::MFA_ADD_PAGE)) {
+                $this->redirectToNag($state, $employeeId, self::MFA_ADD_PAGE);
+            }
+
+            if (self::needToShow($method['add'], self::METHOD_ADD_PAGE)) {
+                $this->redirectToNag($state, $employeeId, self::METHOD_ADD_PAGE);
+            }
+
+            if (self::needToShow($profileReview, self::REVIEW_PAGE))
+            {
+                $this->redirectToProfileReview($state, $employeeId, $mfa['options'], $method['options']);
+            }
         }
+
+        $this->logger->warning(json_encode([
+            'module' => 'profilereview',
+            'event' => 'no nag/review needed',
+            'isHeadedToProfileUrl' => $isHeadedToProfileUrl,
+            'profileReview' => $profileReview,
+            'mfa.add' => $mfa['add'],
+            'method.add' => $method['add'],
+            'employeeId' => $employeeId,
+        ]));
+
+        unset($state['Attributes']['method']);
+        unset($state['Attributes']['mfa']);
+        return;
     }
 
     /**
-     * Redirect user to a specific nag page
+     * Redirect user to profile review page unless there is nothing to review
      *
      * @param array $state The state data.
      * @param string $employeeId The Employee ID of the user account.
-     * @param string $mfaOptions A list of the mfa options.
-     * @param string $methodOptions A list of the method options.
+     * @param array $mfaOptions A list of the mfa options.
+     * @param array $methodOptions A list of the method options.
      */
-    protected function redirectToNag(&$state, $employeeId, $mfaOptions, $methodOptions)
+    protected function redirectToProfileReview(&$state, $employeeId, $mfaOptions, $methodOptions)
     {
         assert('is_array($state)');
 
@@ -275,36 +275,69 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
             }
         }
 
+        if (count($mfaOptions) == 0 && count($methodOptions) == 0) {
+            return;
+        }
+
         /* Save state and redirect. */
         $state['employeeId'] = $employeeId;
         $state['profileUrl'] = $this->profileUrl;
         $state['mfaOptions'] = $mfaOptions;
         $state['methodOptions'] = $methodOptions;
+        $state['template'] = 'review.php';
 
         $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
-        $url = SimpleSAML\Module::getModuleURL(sprintf('profilereview/review.php'));
+        $url = SimpleSAML\Module::getModuleURL('profilereview/nag.php');
 
         HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
     }
 
-    public static function hasSeenSplashPageRecently()
+    /**
+     * @param array $state
+     * @param string $employeeId
+     */
+    protected function redirectToNag(&$state, $employeeId, $template)
+    {
+        /* Save state and redirect. */
+        $state['employeeId'] = $employeeId;
+        $state['mfaLearnMoreUrl'] = $this->mfaLearnMoreUrl;
+        $state['profileUrl'] = $this->profileUrl;
+        $state['template'] = $template;
+
+        $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
+        $url = SimpleSAML\Module::getModuleURL('profilereview/nag.php');
+
+        HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
+    }
+
+    public static function hasSeenSplashPageRecently(string $page)
     {
         $session = SimpleSAML_Session::getSession();
         return (bool)$session->getData(
             self::SESSION_TYPE,
-            self::HAS_SEEN_SPLASH_PAGE
+            $page
         );
     }
 
-    public static function skipSplashPagesFor($seconds)
+    public static function skipSplashPagesFor($seconds, string $page)
     {
         $session = SimpleSAML_Session::getSession();
         $session->setData(
             self::SESSION_TYPE,
-            self::HAS_SEEN_SPLASH_PAGE,
+            $page,
             true,
             $seconds
         );
         $session->save();
+    }
+
+    public static function needToShow($flag, $page)
+    {
+        $oneDay = 24 * 60 * 60;
+        if ($flag === 'yes' && ! self::hasSeenSplashPageRecently($page)) {
+            self::skipSplashPagesFor($oneDay, $page);
+            return true;
+        }
+        return false;
     }
 }
