@@ -18,7 +18,7 @@ $logger = LoggerFactory::getAccordingToState($state);
 
 /* Skip the splash page for awhile to avoid annoying them with constant warnings. */
 $oneDay = 24 * 60 * 60;
-ProfileReview::skipSplashPagesFor($oneDay);
+ProfileReview::skipSplashPagesFor($oneDay, ProfileReview::REVIEW_PAGE);
 
 // If the user has pressed the set-up-Method button...
 if (filter_has_var(INPUT_POST, 'update')) {
