@@ -1,8 +1,14 @@
 <?php
 
+namespace SimpleSAML\Module\profilereview\Auth\Process;
+
 use Psr\Log\LoggerInterface;
 use Sil\Psr3Adapters\Psr3SamlLogger;
 use Sil\SspProfileReview\LoggerFactory;
+use SimpleSAML\Auth\ProcessingFilter;
+use SimpleSAML\Auth\State;
+use SimpleSAML\Module;
+use SimpleSAML\Session;
 use SimpleSAML\Utils\HTTP;
 
 /**
@@ -10,7 +16,7 @@ use SimpleSAML\Utils\HTTP;
  *
  * See README.md for sample (and explanation of) expected configuration.
  */
-class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_ProcessingFilter
+class ProfileReview extends ProcessingFilter
 {
     const SESSION_TYPE = 'profilereview';
     const STAGE_SENT_TO_NAG = 'profilereview:sent_to_nag';
@@ -34,7 +40,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
      *
      * @param array $config Configuration information about this filter.
      * @param mixed $reserved For future use.
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct($config, $reserved)
     {
@@ -57,7 +63,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     /**
      * @param $config
      * @param $attributes
-     * @throws Exception
+     * @throws \Exception
      */
     protected function loadValuesFromConfig($config, $attributes)
     {
@@ -78,12 +84,12 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
      * @param string $attribute The name of the attribute.
      * @param mixed $value The value to check.
      * @param LoggerInterface $logger The logger.
-     * @throws Exception
+     * @throws \Exception
      */
     public static function validateConfigValue($attribute, $value, $logger)
     {
         if (empty($value) || !is_string($value)) {
-            $exception = new Exception(sprintf(
+            $exception = new \Exception(sprintf(
                 'The value we have for %s (%s) is empty or is not a string',
                 $attribute,
                 var_export($value, true)
@@ -189,7 +195,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         // Tell the profile-setup URL where the user is ultimately trying to go (if known).
         $currentDestination = self::getRelayStateUrl($state);
         if (! empty($currentDestination)) {
-            $profileUrl = SimpleSAML\Utils\HTTP::addURLParameters(
+            $profileUrl = HTTP::addURLParameters(
                 $profileUrl,
                 ['returnTo' => $currentDestination]
             );
@@ -208,7 +214,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     /**
      * Apply this AuthProc Filter. It will either return (indicating that it
      * has completed) or it will redirect the user, in which case it will
-     * later call `SimpleSAML_Auth_ProcessingChain::resumeProcessing($state)`.
+     * later call `SimpleSAML\Auth\ProcessingChain::resumeProcessing($state)`.
      *
      * @param array &$state The current state.
      */
@@ -286,8 +292,8 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $state['methodOptions'] = $methodOptions;
         $state['template'] = 'review.php';
 
-        $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
-        $url = SimpleSAML\Module::getModuleURL('profilereview/nag.php');
+        $stateId = State::saveState($state, self::STAGE_SENT_TO_NAG);
+        $url = Module::getModuleURL('profilereview/nag.php');
 
         HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
     }
@@ -295,6 +301,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
     /**
      * @param array $state
      * @param string $employeeId
+     * @param string $template
      */
     protected function redirectToNag(&$state, $employeeId, $template)
     {
@@ -304,15 +311,15 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
         $state['profileUrl'] = $this->profileUrl;
         $state['template'] = $template;
 
-        $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGE_SENT_TO_NAG);
-        $url = SimpleSAML\Module::getModuleURL('profilereview/nag.php');
+        $stateId = State::saveState($state, self::STAGE_SENT_TO_NAG);
+        $url = Module::getModuleURL('profilereview/nag.php');
 
         HTTP::redirectTrustedURL($url, array('StateId' => $stateId));
     }
 
     public static function hasSeenSplashPageRecently(string $page)
     {
-        $session = SimpleSAML_Session::getSession();
+        $session = Session::getSession();
         return (bool)$session->getData(
             self::SESSION_TYPE,
             $page
@@ -321,7 +328,7 @@ class sspmod_profilereview_Auth_Process_ProfileReview extends SimpleSAML_Auth_Pr
 
     public static function skipSplashPagesFor($seconds, string $page)
     {
-        $session = SimpleSAML_Session::getSession();
+        $session = Session::getSession();
         $session->setData(
             self::SESSION_TYPE,
             $page,

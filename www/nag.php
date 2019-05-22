@@ -1,14 +1,19 @@
 <?php
 
 use Sil\SspProfileReview\LoggerFactory;
-use sspmod_profilereview_Auth_Process_ProfileReview as ProfileReview;
+use SimpleSAML\Auth\ProcessingChain;
+use SimpleSAML\Auth\State;
+use SimpleSAML\Configuration;
+use SimpleSAML\Error\BadRequest;
+use SimpleSAML\Module\profilereview\Auth\Process\ProfileReview;
+use SimpleSAML\XHTML\Template;
 
 $stateId = filter_input(INPUT_GET, 'StateId') ?? null;
 if (empty($stateId)) {
-    throw new SimpleSAML_Error_BadRequest('Missing required StateId query parameter.');
+    throw new BadRequest('Missing required StateId query parameter.');
 }
 
-$state = SimpleSAML_Auth_State::loadState($stateId, ProfileReview::STAGE_SENT_TO_NAG);
+$state = State::loadState($stateId, ProfileReview::STAGE_SENT_TO_NAG);
 $logger = LoggerFactory::getAccordingToState($state);
 
 // If the user has pressed the update button...
@@ -19,13 +24,13 @@ if (filter_has_var(INPUT_POST, 'update')) {
     // The user has pressed the continue button.
     unset($state['Attributes']['mfa']);
     unset($state['Attributes']['method']);
-    SimpleSAML_Auth_ProcessingChain::resumeProcessing($state);
+    ProcessingChain::resumeProcessing($state);
     return;
 }
 
-$globalConfig = SimpleSAML_Configuration::getInstance();
+$globalConfig = Configuration::getInstance();
 
-$t = new SimpleSAML_XHTML_Template($globalConfig, 'profilereview:' . $state['template']);
+$t = new Template($globalConfig, 'profilereview:' . $state['template']);
 $t->data['profileUrl'] = $state['profileUrl'];
 $t->data['methodOptions'] = $state['methodOptions'];
 $t->data['mfaOptions'] = $state['mfaOptions'];
