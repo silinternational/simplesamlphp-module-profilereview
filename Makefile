@@ -28,7 +28,7 @@ ps:
 	docker-compose ps
 
 test: composer web
-	make behat
+	docker-compose run --rm tests whenavail idp 80 100 bash -c "vendor/bin/behat --strict --stop-on-failure --append-snippets"
 
 web:
 	docker-compose up -d idp sp pwmanager
