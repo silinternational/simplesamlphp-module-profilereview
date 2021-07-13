@@ -102,3 +102,4 @@ services:
       - PROFILE_URL_FOR_TESTS=http://pwmanager/module.php/core/authenticate.php?as=profilereview-idp-no-port
       - THEME_USE=default
     working_dir: /data
+    encrypted_env_file: codeship.env.encrypted
