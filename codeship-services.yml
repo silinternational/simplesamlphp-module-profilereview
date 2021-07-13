@@ -92,7 +92,6 @@ services:
     volumes:
       - ./development/run-tests.sh:/data/run-tests.sh
       - ./composer.json:/data/composer.json
-      - ./composer.lock:/data/composer.lock
       - ./features:/data/features
       - ./features/behat.yml:/data/behat.yml
       - ./src:/data/src
