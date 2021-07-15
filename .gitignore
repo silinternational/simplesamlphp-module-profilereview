@@ -5,3 +5,4 @@ local.*
 /nbproject/
 vendor/
 .idea/
+composer.lock

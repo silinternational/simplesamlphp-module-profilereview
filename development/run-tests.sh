@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-runny composer install --no-interaction --no-scripts
+set -e
+set -x
+
+composer install --no-interaction --no-scripts
 
 whenavail idp 80 200 echo idp ready, starting behat...
 
