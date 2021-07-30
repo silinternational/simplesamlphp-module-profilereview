@@ -319,7 +319,7 @@ class ProfileReview extends ProcessingFilter
 
     public static function hasSeenSplashPageRecently(string $page)
     {
-        $session = Session::getSession();
+        $session = Session::getSessionFromRequest();
         return (bool)$session->getData(
             self::SESSION_TYPE,
             $page
@@ -328,7 +328,7 @@ class ProfileReview extends ProcessingFilter
 
     public static function skipSplashPagesFor($seconds, string $page)
     {
-        $session = Session::getSession();
+        $session = Session::getSessionFromRequest();
         $session->setData(
             self::SESSION_TYPE,
             $page,
