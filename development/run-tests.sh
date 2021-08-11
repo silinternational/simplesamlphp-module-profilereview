@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-runny ./setup-logentries.sh
+set -e
+set -x
 
-runny composer install --no-interaction --no-scripts
+composer install --no-interaction --no-scripts
 
 whenavail idp 80 200 echo idp ready, starting behat...
 

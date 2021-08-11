@@ -14,7 +14,6 @@ trap 'kill ${!}; term_handler' SIGTERM
 touch /data/vendor/simplesamlphp/simplesamlphp/modules/exampleauth/enable
 
 cd /data
-./setup-logentries.sh
 
 apache2ctl start
 
