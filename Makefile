@@ -17,12 +17,16 @@ clean:
 
 composer:
 	docker-compose run --rm composer bash -c "composer install --no-scripts"
-# 	touch vendor/simplesamlphp/simplesamlphp/config/authsources.php
-# 	touch vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-hosted.php
-# 	touch vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-remote.php
-# 	touch vendor/simplesamlphp/simplesamlphp/metadata/saml20-sp-remote.php
-# 	touch vendor/simplesamlphp/simplesamlphp/modules/exampleauth/lib/Auth/Source/UserPass.php
-# 	touch vendor/simplesamlphp/simplesamlphp/www/saml2/idp/SSOService.php
+	mkdir -p vendor/simplesamlphp/simplesamlphp/config
+	mkdir -p vendor/simplesamlphp/simplesamlphp/metadata
+	mkdir -p vendor/simplesamlphp/simplesamlphp/modules/exampleauth/lib/Auth/Source
+	mkdir -p vendor/simplesamlphp/simplesamlphp/www/saml2/idp
+	touch vendor/simplesamlphp/simplesamlphp/config/authsources.php
+	touch vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-hosted.php
+	touch vendor/simplesamlphp/simplesamlphp/metadata/saml20-idp-remote.php
+	touch vendor/simplesamlphp/simplesamlphp/metadata/saml20-sp-remote.php
+	touch vendor/simplesamlphp/simplesamlphp/modules/exampleauth/lib/Auth/Source/UserPass.php
+	touch vendor/simplesamlphp/simplesamlphp/www/saml2/idp/SSOService.php
 
 composerupdate:
 	docker-compose run --rm composer bash -c "composer update --no-scripts"
