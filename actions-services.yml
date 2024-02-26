@@ -1,7 +1,7 @@
 version: "2"
 
 services:
-  
+
   idp:
     image: silintl/ssp-base:develop
     volumes:
@@ -27,7 +27,6 @@ services:
       - ./development/idp-local/metadata/saml20-sp-remote.php:/data/vendor/simplesamlphp/simplesamlphp/metadata/saml20-sp-remote.php
     env_file:
       - ./common.env
-    encrypted_env_file: codeship.env.encrypted
     environment:
       - ADMIN_EMAIL=john_doe@example.com
       - ADMIN_PASS=a
@@ -82,7 +81,7 @@ services:
       - SAML20_IDP_ENABLE=false
       - ADMIN_PROTECT_INDEX_PAGE=false
       - THEME_USE=default
-  
+
   tests:
     image: silintl/ssp-base:develop
     depends_on:
@@ -102,4 +101,3 @@ services:
       - PROFILE_URL_FOR_TESTS=http://pwmanager/module.php/core/authenticate.php?as=profilereview-idp-no-port
       - THEME_USE=default
     working_dir: /data
-    encrypted_env_file: codeship.env.encrypted
